@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "ecosystem": "ELECTRO-HOBBY-3D",
+  "name": "TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID",
+  "version": "0.0.1",
+  "role": "ui",
+  "stack": "Kotlin / Jetpack Compose",
+  "technologies": [
+    "Kotlin",
+    "Jetpack Compose",
+    "Read API v1 of GitHub Actions Monitor",
+    "Android Keystore"
+  ],
+  "deployment_target": "mobile",
+  "maturity": "scaffolding",
+  "evidence": "host-test",
+  "hardware_bound": false,
+  "family": "Tools",
+  "parent": "TOOLS-GITHUB-ACTIONS-MONITOR",
+  "build": "./gradlew testDebugUnitTest lintDebug assembleDebug",
+  "notes": "Scaffolding v0.0.1: the native Android client of GitHub Actions Monitor. It reads the read API v1 of a monitor with a bearer token kept sealed in the Android Keystore, shows the summary, the alerts, the repositories and the action proposals, lets a person approve or reject a proposal (the server enforces that a second person approves) and opens ghamon://proposal links. Push notifications are critical-only and OFF by default, and the Firebase side is a null implementation until a Google project exists. The rules are tested on the JVM; the app has not been built or run on a phone yet.",
+  "native_version": {
+    "file": "VERSION",
+    "pattern": "^(\\d+\\.\\d+\\.\\d+)"
+  }
+}

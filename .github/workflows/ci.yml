@@ -1,0 +1,101 @@
+name: EH3D CI baseline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # a newer push to a branch replaces the run before it; the runs of main and of the tags are never cancelled
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/') }}
+
+permissions:
+  contents: read
+
+jobs:
+  # The checks every repository of the suite runs, held once in EH3D-DOCS as a reusable workflow
+  # (the manifest, the documents, the pictures of the README, the tests of tools/). The reference is
+  # a full commit, so a change there reaches this repository only when this line is moved.
+  validate:
+    uses: JuanenRac/EH3D-DOCS/.github/workflows/validate.yml@4610941ddec34b44f54073f0f0acf1ccd1b9ae48
+    with:
+      python-version: "3.12"
+      check-pictures: true
+      run-tool-tests: true
+
+  changelog:
+    name: The change has a line in the CHANGELOG
+    if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-changelog') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Compare with the base branch
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: python -I tools/changelog_pr_check.py --base "origin/$BASE_REF"
+
+  # The Android build: the unit tests (they run on the JVM, no phone), lint and the debug APK. Gradle runs here and nowhere else.
+  android:
+    name: Gradle tests, lint and the debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: The light checks of the app (languages, resources, config, secrets)
+        run: python -I tools/check_app.py
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Make the Gradle wrapper executable
+        run: chmod +x gradlew
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+      - name: Unit tests, lint and the debug APK
+        run: ./gradlew testDebugUnitTest lintDebug assembleDebug --no-daemon
+      - name: Keep the reports of the tests and of lint
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reports
+          path: |
+            app/build/reports/tests
+            app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Keep the debug APK
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: monitor-android-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  # The one check to require in the rules of the branch. It always runs, fails when a job failed or was cancelled and accepts a job that was
+  # skipped on purpose (the changelog check on a push, an expensive job whose paths did not change), so it never waits for a job that did not start.
+  ci-gate:
+    name: CI gate
+    if: ${{ always() }}
+    needs: [validate, changelog, android]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every job ran, or was skipped on purpose
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "results: $RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1 ;; esac

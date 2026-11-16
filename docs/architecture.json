@@ -1,0 +1,182 @@
+{
+  "repo": "TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID",
+  "ecosystem": "eh3d",
+  "tagline": "The monitor in your pocket: read, review, decide.",
+  "description": "The Android app reads the read API v1 of GitHub Actions Monitor with a bearer token kept in the Android Keystore, shows the summary, alerts, repositories and action proposals, lets a person approve or reject a proposal, opens ghamon links, and has critical-only push notifications that are off by default behind a null push service.",
+  "columns": [
+    "WHO USES IT",
+    "THIS APP",
+    "WHAT IT TALKS TO"
+  ],
+  "nodes": [
+    {
+      "id": "person",
+      "column": 0,
+      "level": "external",
+      "title": "A person on call",
+      "lines": [
+        "watches alerts and",
+        "approves or rejects proposals"
+      ]
+    },
+    {
+      "id": "link",
+      "column": 0,
+      "level": "external",
+      "title": "A link or a tap",
+      "lines": [
+        "ghamon://proposal/<id>",
+        "opens one proposal only"
+      ]
+    },
+    {
+      "id": "ui",
+      "column": 1,
+      "level": "untested",
+      "title": "Screens",
+      "lines": [
+        "summary, alerts, repos,",
+        "proposals, settings",
+        [
+          "not run on a phone",
+          "warn"
+        ]
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/Screens.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/ProposalScreens.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/SettingsScreen.kt"
+      ]
+    },
+    {
+      "id": "rules",
+      "column": 1,
+      "level": "tested",
+      "title": "Rules",
+      "lines": [
+        "hash-bound approval, links,",
+        "critical-only push gate"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/ProposalRules.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/DeepLink.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Push.kt"
+      ]
+    },
+    {
+      "id": "api",
+      "column": 1,
+      "level": "tested",
+      "title": "API v1 client",
+      "lines": [
+        "bearer token, cursors, error",
+        "envelope, paths from config"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/MonitorApi.kt",
+        "app/src/main/assets/app_config.json"
+      ]
+    },
+    {
+      "id": "vault",
+      "column": 1,
+      "level": "tested",
+      "title": "Settings",
+      "lines": [
+        "address checked, token",
+        "sealed by a Keystore key"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Settings.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/AndroidStorage.kt"
+      ]
+    },
+    {
+      "id": "push",
+      "column": 2,
+      "level": "config",
+      "title": "Push service",
+      "lines": [
+        "null until a Google",
+        "project exists"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Push.kt::object NullPushRegistrar"
+      ]
+    },
+    {
+      "id": "monitor",
+      "column": 2,
+      "level": "external",
+      "title": "GitHub Actions Monitor",
+      "lines": [
+        "read API v1, proposals",
+        "and device registration"
+      ]
+    },
+    {
+      "id": "android",
+      "column": 2,
+      "level": "external",
+      "title": "Android",
+      "lines": [
+        "Keystore, notifications",
+        "and the link filter"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "person",
+      "to": "ui",
+      "label": "uses",
+      "level": "untested"
+    },
+    {
+      "from": "link",
+      "to": "ui",
+      "label": "opens",
+      "level": "untested"
+    },
+    {
+      "from": "ui",
+      "to": "rules",
+      "level": "tested"
+    },
+    {
+      "from": "ui",
+      "to": "api",
+      "level": "tested"
+    },
+    {
+      "from": "api",
+      "to": "vault",
+      "level": "tested"
+    },
+    {
+      "from": "api",
+      "to": "monitor",
+      "label": "HTTPS + bearer",
+      "level": "tested"
+    },
+    {
+      "from": "vault",
+      "to": "android",
+      "label": "seals",
+      "level": "config"
+    },
+    {
+      "from": "rules",
+      "to": "push",
+      "label": "gate",
+      "level": "config"
+    }
+  ],
+  "legend": {
+    "tested": "tested on the JVM in CI",
+    "untested": "built from the code, not run on a phone",
+    "config": "needs a phone or a Google project",
+    "external": "outside this repository"
+  },
+  "footer": "Nothing here has been run on a phone or against a real monitor yet."
+}
