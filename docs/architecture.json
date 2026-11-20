@@ -1,0 +1,86 @@
+{
+  "repo": "TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID",
+  "ecosystem": "eh3d",
+  "tagline": "The monitor on your phone: planned, not built.",
+  "description": "The planned Android app only reads from the monitor of its user and shows the state of the workflows and the alerts. This repository has no code yet.",
+  "columns": [
+    "WHO WILL USE IT",
+    "THIS REPOSITORY",
+    "WHAT IT WILL TALK TO"
+  ],
+  "nodes": [
+    {
+      "id": "person",
+      "column": 0,
+      "level": "external",
+      "title": "A person on call",
+      "lines": [
+        "will watch the state of the",
+        "workflows and the alerts"
+      ]
+    },
+    {
+      "id": "app",
+      "column": 1,
+      "level": "untested",
+      "title": "The Android app",
+      "lines": [
+        "planned, nothing built",
+        [
+          "no code, no tests",
+          "warn"
+        ]
+      ],
+      "code": [
+        "README.md"
+      ]
+    },
+    {
+      "id": "monitor",
+      "column": 2,
+      "level": "external",
+      "title": "GitHub Actions Monitor",
+      "lines": [
+        "read API v1,",
+        "read only"
+      ]
+    },
+    {
+      "id": "far",
+      "column": 2,
+      "level": "external",
+      "title": "Android",
+      "lines": [
+        "a phone, never used",
+        "by this repository yet"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "person",
+      "to": "app",
+      "label": "will use",
+      "level": "untested"
+    },
+    {
+      "from": "app",
+      "to": "monitor",
+      "label": "will read",
+      "level": "untested"
+    },
+    {
+      "from": "app",
+      "to": "far",
+      "label": "runs on",
+      "level": "untested"
+    }
+  ],
+  "legend": {
+    "tested": "tested in CI",
+    "untested": "planned, not built",
+    "config": "needs a device",
+    "external": "outside this repository"
+  },
+  "footer": "Nothing here has been built or run yet: this repository is only the base."
+}

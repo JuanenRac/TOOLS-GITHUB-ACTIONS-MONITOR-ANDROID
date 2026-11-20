@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "ecosystem": "ELECTRO-HOBBY-3D",
+  "name": "TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID",
+  "version": "0.0.1",
+  "role": "ui",
+  "stack": "android",
+  "technologies": [
+    "Kotlin",
+    "Jetpack Compose",
+    "Read API v1 of GitHub Actions Monitor"
+  ],
+  "deployment_target": "mobile",
+  "maturity": "scaffolding",
+  "evidence": "none",
+  "hardware_bound": false,
+  "family": "Tools",
+  "parent": "TOOLS-GITHUB-ACTIONS-MONITOR",
+  "build": "Not built yet: there is no Android project. The repository checks run with python -I tools/ci_validate.py.",
+  "notes": "Scaffolding v0.0.1: the planned Android app of GitHub Actions Monitor, which would show the state of the workflows and the alerts of the monitor of its own user on a phone. It only reads from the monitor and writes nothing to GitHub. There is no code yet: this repository holds only its base (documents, manifest, licence and shared checks). Nothing has been built, tested or run on a phone.",
+  "native_version": {
+    "file": "VERSION",
+    "pattern": "^(\\d+\\.\\d+\\.\\d+)"
+  }
+}
