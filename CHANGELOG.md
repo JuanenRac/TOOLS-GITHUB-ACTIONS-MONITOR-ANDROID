@@ -4,9 +4,6 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-## [0.0.1] - The base of the repository
-
-- **The base that every repository of the suite has:** the manifest, the README files in eight languages, this changelog, the CI workflow, the issue and pull-request templates, and the shared checks of EH3D-DOCS (the repository check and the drawers of the two README pictures). There is no application code yet.
 - **The Android app of GitHub Actions Monitor:** a Kotlin and Jetpack Compose project (Gradle wrapper, Android 8.0 and later) with five screens: summary, alerts, repositories, proposals and settings.
 - **Client of the read API v1:** bearer token, cursor paging, the error envelope turned into stable keys, no redirects, a limit on the size of an answer, and every path, timeout and page size read from `app/src/main/assets/app_config.json`.
 - **Proposals with four eyes:** a list with details, and approve or reject after a confirmation that names the content hash; the approval carries that hash, and a proposal the person created is not offered for approval when they gave their name.
