@@ -102,7 +102,7 @@ Todo o valor ajustável está em `app/src/main/assets/app_config.json`: os camin
 Para compilar precisa do JDK 21 e do SDK do Android (o Android Studio traz ambos); as verificações leves só precisam do Python 3.10 ou posterior. Abra a aplicação, vá a Definições, escreva o endereço do seu monitor e o respetivo token e guarde.
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             desenham as duas imagens do README
 ├── docs/                                                  as fontes das duas imagens
 ├── gradle/                                                os ficheiros do wrapper do Gradle
-├── gradlew gradlew.bat                                    o wrapper do Gradle
-├── build.gradle.kts settings.gradle.kts                   os plugins e o nome da compilação
+├── gradlew                                                o wrapper do Gradle
+├── gradlew.bat                                            o wrapper do Gradle
+├── build.gradle.kts                                       os plugins e o nome da compilação
+├── settings.gradle.kts                                    os plugins e o nome da compilação
 ├── gradle.properties                                      a memória da compilação
 ├── images/                                                banner e as duas imagens
 ├── .github/                                               fluxos de CI e modelos
 ├── VERSION                                                a versão do repositório
+├── electro-hobby-3d.project.json                          o manifesto do projeto
 ├── CHANGELOG.md                                           o que mudou em cada versão
 ├── SECURITY.md SUPPORT.md                                 como comunicar uma vulnerabilidade e onde perguntar
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             como contribuir, o código de conduta e a licença

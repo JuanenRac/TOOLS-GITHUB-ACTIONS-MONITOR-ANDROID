@@ -14,7 +14,7 @@ All notable changes to this project are documented here.
 - **Settings:** the address of the monitor is checked (https, or http only on the home network), the token is sealed with an Android Keystore key and can be forgotten, and the device can be registered with the monitor.
 - **Critical-only push notifications, off by default:** a gate that drops anything that is not critical, repeated or without an id, and a push service behind an interface whose implementation does nothing until a Google project exists; no Firebase file or key is in the repository.
 - **Eight languages** (English, Spanish, German, French, Italian, Japanese, Chinese and European Portuguese) for every text of the app, with a check that the keys and placeholders are the same in all of them.
-- **Tests and CI:** unit tests on the JVM for the client, the rules, the links, the push gate and the settings; light checks of the languages, the resources, the configuration and the secrets; a CI job that builds, tests and lints with Gradle.
+- **Tests and CI:** unit tests on the JVM for the client, the rules, the links, the push gate and the settings; light checks of the languages, the resources, the configuration and the secrets; a CI job that runs the unit tests and lint with Gradle and checks that the number of tests that ran is the one stated (no APK is built there).
 - **README files in eight languages** with the Architecture and Repository Structure pictures, the manifest of the repository and the shared checks of the suite.
 
 ## [0.0.1] - The base of the repository

@@ -102,7 +102,7 @@ Ogni valore regolabile è in `app/src/main/assets/app_config.json`: i percorsi, 
 Per compilare servono JDK 21 e l'SDK di Android (Android Studio porta entrambi); i controlli leggeri richiedono solo Python 3.10 o successivo. Apri l'app, vai in Impostazioni, digita l'indirizzo del tuo monitor e il suo token e salva.
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             disegnano le due immagini del README
 ├── docs/                                                  le sorgenti delle due immagini
 ├── gradle/                                                i file del wrapper Gradle
-├── gradlew gradlew.bat                                    il wrapper Gradle
-├── build.gradle.kts settings.gradle.kts                   i plugin e il nome della build
+├── gradlew                                                il wrapper Gradle
+├── gradlew.bat                                            il wrapper Gradle
+├── build.gradle.kts                                       i plugin e il nome della build
+├── settings.gradle.kts                                    i plugin e il nome della build
 ├── gradle.properties                                      la memoria della build
 ├── images/                                                banner e le due immagini
 ├── .github/                                               workflow di CI e modelli
 ├── VERSION                                                la versione del repository
+├── electro-hobby-3d.project.json                          il manifesto del progetto
 ├── CHANGELOG.md                                           cosa è cambiato in ogni versione
 ├── SECURITY.md SUPPORT.md                                 come segnalare una vulnerabilità e dove chiedere
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             come contribuire, codice di condotta e licenza

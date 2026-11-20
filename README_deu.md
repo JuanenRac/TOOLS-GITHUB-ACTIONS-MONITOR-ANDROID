@@ -102,7 +102,7 @@ Jeder einstellbare Wert steht in `app/src/main/assets/app_config.json`: die Pfad
 Zum Bauen brauchst du JDK 21 und das Android SDK (Android Studio bringt beides mit); die leichten Prüfungen brauchen nur Python 3.10 oder neuer. Öffne die App, gehe zu Einstellungen, gib die Adresse deines Monitors und seinen Token ein und speichere.
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             zeichnen die beiden Bilder des README
 ├── docs/                                                  die Quellen der beiden Bilder
 ├── gradle/                                                die Dateien des Gradle-Wrappers
-├── gradlew gradlew.bat                                    der Gradle-Wrapper
-├── build.gradle.kts settings.gradle.kts                   die Plugins und der Name des Builds
+├── gradlew                                                der Gradle-Wrapper
+├── gradlew.bat                                            der Gradle-Wrapper
+├── build.gradle.kts                                       die Plugins und der Name des Builds
+├── settings.gradle.kts                                    die Plugins und der Name des Builds
 ├── gradle.properties                                      der Speicher des Builds
 ├── images/                                                Banner und die beiden Bilder
 ├── .github/                                               CI-Workflows und Vorlagen
 ├── VERSION                                                die Version des Repositorys
+├── electro-hobby-3d.project.json                          das Manifest des Projekts
 ├── CHANGELOG.md                                           was sich in jeder Version geändert hat
 ├── SECURITY.md SUPPORT.md                                 Schwachstellen melden und Fragen stellen
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             Mitwirken, Verhaltenskodex und Lizenz

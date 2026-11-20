@@ -102,7 +102,7 @@ TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID は GitHub Actions Monitor（TOOLS-GITHUB-A
 ビルドには JDK 21 と Android SDK が必要です（Android Studio に両方含まれます）。軽量チェックには Python 3.10 以上のみが必要です。アプリを開き、設定でモニターのアドレスとトークンを入力して保存してください。
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             README の 2 つの図を描く
 ├── docs/                                                  2 つの図の元データ
 ├── gradle/                                                Gradle ラッパーのファイル
-├── gradlew gradlew.bat                                    Gradle ラッパー
-├── build.gradle.kts settings.gradle.kts                   プラグインとビルド名
+├── gradlew                                                Gradle ラッパー
+├── gradlew.bat                                            Gradle ラッパー
+├── build.gradle.kts                                       プラグインとビルド名
+├── settings.gradle.kts                                    プラグインとビルド名
 ├── gradle.properties                                      ビルドのメモリ設定
 ├── images/                                                バナーと 2 つの図
 ├── .github/                                               CI ワークフローとテンプレート
 ├── VERSION                                                リポジトリのバージョン
+├── electro-hobby-3d.project.json                          プロジェクトのマニフェスト
 ├── CHANGELOG.md                                           各バージョンの変更点
 ├── SECURITY.md SUPPORT.md                                 脆弱性の報告方法と問い合わせ先
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             貢献方法、行動規範、ライセンス

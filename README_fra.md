@@ -102,7 +102,7 @@ Toute valeur réglable se trouve dans `app/src/main/assets/app_config.json` : le
 Pour compiler, il faut le JDK 21 et le SDK Android (Android Studio apporte les deux) ; les contrôles légers n'exigent que Python 3.10 ou plus récent. Ouvrez l'application, allez dans Réglages, saisissez l'adresse de votre moniteur et son jeton, puis enregistrez.
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             dessinent les deux images du README
 ├── docs/                                                  les sources des deux images
 ├── gradle/                                                les fichiers du wrapper Gradle
-├── gradlew gradlew.bat                                    le wrapper Gradle
-├── build.gradle.kts settings.gradle.kts                   les plugins et le nom du build
+├── gradlew                                                le wrapper Gradle
+├── gradlew.bat                                            le wrapper Gradle
+├── build.gradle.kts                                       les plugins et le nom du build
+├── settings.gradle.kts                                    les plugins et le nom du build
 ├── gradle.properties                                      la mémoire du build
 ├── images/                                                bannière et les deux images
 ├── .github/                                               workflows de CI et modèles
 ├── VERSION                                                la version du dépôt
+├── electro-hobby-3d.project.json                          le manifeste du projet
 ├── CHANGELOG.md                                           ce qui a changé dans chaque version
 ├── SECURITY.md SUPPORT.md                                 signaler une vulnérabilité et poser des questions
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             contribuer, code de conduite et licence

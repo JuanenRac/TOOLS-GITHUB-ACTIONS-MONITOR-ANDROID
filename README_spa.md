@@ -102,7 +102,7 @@ Todo valor ajustable está en `app/src/main/assets/app_config.json`: las rutas, 
 Para compilar necesitas JDK 21 y el SDK de Android (Android Studio trae ambos); las comprobaciones ligeras solo necesitan Python 3.10 o posterior. Abre la app, ve a Ajustes, escribe la dirección de tu monitor y su token, y guarda.
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             dibujan las dos imágenes del README
 ├── docs/                                                  las fuentes de las dos imágenes
 ├── gradle/                                                los archivos del wrapper de Gradle
-├── gradlew gradlew.bat                                    el wrapper de Gradle
-├── build.gradle.kts settings.gradle.kts                   los plugins y el nombre de la compilación
+├── gradlew                                                el wrapper de Gradle
+├── gradlew.bat                                            el wrapper de Gradle
+├── build.gradle.kts                                       los plugins y el nombre de la compilación
+├── settings.gradle.kts                                    los plugins y el nombre de la compilación
 ├── gradle.properties                                      la memoria de la compilación
 ├── images/                                                banner y las dos imágenes
 ├── .github/                                               flujos de CI y plantillas
 ├── VERSION                                                la versión del repositorio
+├── electro-hobby-3d.project.json                          el manifiesto del proyecto
 ├── CHANGELOG.md                                           qué cambió en cada versión
 ├── SECURITY.md SUPPORT.md                                 cómo informar de una vulnerabilidad y dónde preguntar
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             cómo contribuir, el código de conducta y la licencia

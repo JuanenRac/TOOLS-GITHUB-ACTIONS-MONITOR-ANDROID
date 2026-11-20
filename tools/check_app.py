@@ -124,12 +124,27 @@ def check_version(problems: list[str]) -> None:
         problems.append(f"manifest: versions differ (manifest {manifest}, VERSION {version}, gradle {match.group(1) if match else '?'})")
 
 
+def check_junit(directory: str, expected: int) -> int:
+    """Counts the tests the Gradle run reported (JUnit XML) and fails when the number is not the one the README states."""
+    import xml.etree.ElementTree as ET
+    total = failed = 0
+    for path in sorted(Path(directory).glob("*.xml")):
+        suite = ET.parse(path).getroot()
+        total += int(suite.get("tests", "0"))
+        failed += int(suite.get("failures", "0")) + int(suite.get("errors", "0"))
+    ok = total == expected and failed == 0
+    print(f"JVM_TESTS={'PASS' if ok else 'FAIL'} ({total} run, {failed} failed, {expected} expected)")
+    return 0 if ok else 1
+
+
 def main(argv: list[str]) -> int:
     if len(argv) > 1 and argv[1] in ("-h", "--help"):
         print(__doc__)
         return 0
+    if len(argv) == 4 and argv[1] == "--junit":
+        return check_junit(argv[2], int(argv[3]))
     if len(argv) > 1:
-        print("usage: check_app.py", file=sys.stderr)
+        print("usage: check_app.py [--junit DIR EXPECTED]", file=sys.stderr)
         return 64
     problems: list[str] = []
     names = set(check_strings(problems))

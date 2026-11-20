@@ -102,7 +102,7 @@ Every tuned value is in `app/src/main/assets/app_config.json`: the paths, the ti
 You need JDK 21 and the Android SDK (Android Studio brings both) to build; the light checks need only Python 3.10 or newer. Open the app, go to Settings, type the address of your monitor and its token, and save.
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             draw the two pictures of the README
 ├── docs/                                                  the sources of the two pictures
 ├── gradle/                                                the files of the Gradle wrapper
-├── gradlew gradlew.bat                                    the Gradle wrapper
-├── build.gradle.kts settings.gradle.kts                   the plugins and the name of the build
+├── gradlew                                                the Gradle wrapper
+├── gradlew.bat                                            the Gradle wrapper
+├── build.gradle.kts                                       the plugins and the name of the build
+├── settings.gradle.kts                                    the plugins and the name of the build
 ├── gradle.properties                                      the memory of the build
 ├── images/                                                banner and the two pictures
 ├── .github/                                               CI workflows and templates
 ├── VERSION                                                the version of the repository
+├── electro-hobby-3d.project.json                          the manifest of the project
 ├── CHANGELOG.md                                           what changed in each version
 ├── SECURITY.md SUPPORT.md                                 how to report a vulnerability and where to ask
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             how to contribute, the code of conduct and the licence

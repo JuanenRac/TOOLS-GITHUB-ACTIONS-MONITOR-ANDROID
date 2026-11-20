@@ -2,9 +2,6 @@
   "repo": "MONITOR-ANDROID",
   "ecosystem": "eh3d",
   "svg": "en",
-  "exempt": [
-    "electro-hobby-3d.project.json"
-  ],
   "cards": [
     {
       "name": "app/",
@@ -224,7 +221,7 @@
           "tree_name": "gradle/"
         },
         {
-          "name": "gradlew  gradlew.bat",
+          "name": "gradlew",
           "desc": {
             "en": "the Gradle wrapper",
             "es": "el wrapper de Gradle",
@@ -235,10 +232,24 @@
             "zh": "Gradle 包装器",
             "pt": "o wrapper do Gradle"
           },
-          "tree_name": "gradlew gradlew.bat"
+          "tree_name": "gradlew"
         },
         {
-          "name": "build.gradle.kts  settings.gradle.kts",
+          "name": "gradlew.bat",
+          "desc": {
+            "en": "the Gradle wrapper",
+            "es": "el wrapper de Gradle",
+            "de": "der Gradle-Wrapper",
+            "fr": "le wrapper Gradle",
+            "it": "il wrapper Gradle",
+            "ja": "Gradle ラッパー",
+            "zh": "Gradle 包装器",
+            "pt": "o wrapper do Gradle"
+          },
+          "tree_name": "gradlew.bat"
+        },
+        {
+          "name": "build.gradle.kts",
           "desc": {
             "en": "the plugins and the name of the build",
             "es": "los plugins y el nombre de la compilación",
@@ -249,7 +260,21 @@
             "zh": "插件和构建名称",
             "pt": "os plugins e o nome da compilação"
           },
-          "tree_name": "build.gradle.kts settings.gradle.kts"
+          "tree_name": "build.gradle.kts"
+        },
+        {
+          "name": "settings.gradle.kts",
+          "desc": {
+            "en": "the plugins and the name of the build",
+            "es": "los plugins y el nombre de la compilación",
+            "de": "die Plugins und der Name des Builds",
+            "fr": "les plugins et le nom du build",
+            "it": "i plugin e il nome della build",
+            "ja": "プラグインとビルド名",
+            "zh": "插件和构建名称",
+            "pt": "os plugins e o nome da compilação"
+          },
+          "tree_name": "settings.gradle.kts"
         },
         {
           "name": "gradle.properties",
@@ -306,6 +331,20 @@
             "pt": "a versão do repositório"
           },
           "tree_name": "VERSION"
+        },
+        {
+          "name": "electro-hobby-3d.project.json",
+          "desc": {
+            "en": "the manifest of the project",
+            "es": "el manifiesto del proyecto",
+            "de": "das Manifest des Projekts",
+            "fr": "le manifeste du projet",
+            "it": "il manifesto del progetto",
+            "ja": "プロジェクトのマニフェスト",
+            "zh": "项目清单",
+            "pt": "o manifesto do projeto"
+          },
+          "tree_name": "electro-hobby-3d.project.json"
         },
         {
           "name": "CHANGELOG.md",

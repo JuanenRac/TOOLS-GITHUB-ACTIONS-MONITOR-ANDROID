@@ -102,7 +102,7 @@ TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID 是 GitHub Actions Monitor（TOOLS-GITHUB-A
 构建需要 JDK 21 和 Android SDK（Android Studio 两者都带）；轻量检查只需要 Python 3.10 或更高版本。打开应用，进入设置，输入监控器的地址和令牌并保存。
 
 ```bash
-./gradlew testDebugUnitTest lintDebug assembleDebug
+./gradlew testDebugUnitTest lintDebug
 python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
@@ -143,12 +143,15 @@ MONITOR-ANDROID/
 │   └── make_architecture.py make_structure.py             绘制 README 的两张图
 ├── docs/                                                  两张图的数据源
 ├── gradle/                                                Gradle 包装器文件
-├── gradlew gradlew.bat                                    Gradle 包装器
-├── build.gradle.kts settings.gradle.kts                   插件和构建名称
+├── gradlew                                                Gradle 包装器
+├── gradlew.bat                                            Gradle 包装器
+├── build.gradle.kts                                       插件和构建名称
+├── settings.gradle.kts                                    插件和构建名称
 ├── gradle.properties                                      构建的内存设置
 ├── images/                                                横幅图和两张图片
 ├── .github/                                               CI 工作流和模板
 ├── VERSION                                                仓库的版本
+├── electro-hobby-3d.project.json                          项目清单
 ├── CHANGELOG.md                                           每个版本的变更
 ├── SECURITY.md SUPPORT.md                                 如何报告漏洞及在哪里提问
 └── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             参与贡献、行为准则和许可证
