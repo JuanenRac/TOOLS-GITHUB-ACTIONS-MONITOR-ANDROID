@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the app trusts on the network. Plain HTTP stays allowed here because a monitor on the home network often has no certificate; the app itself (MonitorUrl) lets it go only to
+     localhost, a .local name or a private IPv4 address typed as a literal, and refuses it for any other host. HTTPS is checked against the authorities of the system only. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

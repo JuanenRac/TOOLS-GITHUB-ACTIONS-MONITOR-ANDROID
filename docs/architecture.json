@@ -1,12 +1,12 @@
 {
   "repo": "TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID",
   "ecosystem": "eh3d",
-  "tagline": "The monitor on your phone: planned, not built.",
-  "description": "The planned Android app only reads from the monitor of its user and shows the state of the workflows and the alerts. This repository has no code yet.",
+  "tagline": "The monitor in your pocket: read, review, decide.",
+  "description": "The Android app reads the read API v1 of GitHub Actions Monitor with a bearer token kept in the Android Keystore, shows the summary, alerts, repositories and action proposals, lets a person approve or reject a proposal, opens ghamon links, and has critical-only push notifications that are off by default behind a null push service.",
   "columns": [
-    "WHO WILL USE IT",
-    "THIS REPOSITORY",
-    "WHAT IT WILL TALK TO"
+    "WHO USES IT",
+    "THIS APP",
+    "WHAT IT TALKS TO"
   ],
   "nodes": [
     {
@@ -15,24 +15,93 @@
       "level": "external",
       "title": "A person on call",
       "lines": [
-        "will watch the state of the",
-        "workflows and the alerts"
+        "watches alerts and",
+        "approves or rejects proposals"
       ]
     },
     {
-      "id": "app",
+      "id": "link",
+      "column": 0,
+      "level": "external",
+      "title": "A link or a tap",
+      "lines": [
+        "ghamon://proposal/<id>",
+        "opens one proposal only"
+      ]
+    },
+    {
+      "id": "ui",
       "column": 1,
       "level": "untested",
-      "title": "The Android app",
+      "title": "Screens",
       "lines": [
-        "planned, nothing built",
+        "summary, alerts, repos,",
+        "proposals, settings",
         [
-          "no code, no tests",
+          "not run on a phone",
           "warn"
         ]
       ],
       "code": [
-        "README.md"
+        "app/src/main/java/es/electrohobby3d/ghamonitor/Screens.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/ProposalScreens.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/SettingsScreen.kt"
+      ]
+    },
+    {
+      "id": "rules",
+      "column": 1,
+      "level": "tested",
+      "title": "Rules",
+      "lines": [
+        "hash-bound approval, links,",
+        "critical-only push gate"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/ProposalRules.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/DeepLink.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Push.kt"
+      ]
+    },
+    {
+      "id": "api",
+      "column": 1,
+      "level": "tested",
+      "title": "API v1 client",
+      "lines": [
+        "bearer token, cursors, error",
+        "envelope, paths from config"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/MonitorApi.kt",
+        "app/src/main/assets/app_config.json"
+      ]
+    },
+    {
+      "id": "vault",
+      "column": 1,
+      "level": "tested",
+      "title": "Settings",
+      "lines": [
+        "address checked, token",
+        "sealed by a Keystore key"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Settings.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/AndroidStorage.kt"
+      ]
+    },
+    {
+      "id": "push",
+      "column": 2,
+      "level": "config",
+      "title": "Push service",
+      "lines": [
+        "null until a Google",
+        "project exists"
+      ],
+      "code": [
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Push.kt::object NullPushRegistrar"
       ]
     },
     {
@@ -41,46 +110,73 @@
       "level": "external",
       "title": "GitHub Actions Monitor",
       "lines": [
-        "read API v1,",
-        "read only"
+        "read API v1, proposals",
+        "and device registration"
       ]
     },
     {
-      "id": "far",
+      "id": "android",
       "column": 2,
       "level": "external",
       "title": "Android",
       "lines": [
-        "a phone, never used",
-        "by this repository yet"
+        "Keystore, notifications",
+        "and the link filter"
       ]
     }
   ],
   "edges": [
     {
       "from": "person",
-      "to": "app",
-      "label": "will use",
+      "to": "ui",
+      "label": "uses",
       "level": "untested"
     },
     {
-      "from": "app",
+      "from": "link",
+      "to": "ui",
+      "label": "opens",
+      "level": "untested"
+    },
+    {
+      "from": "ui",
+      "to": "rules",
+      "level": "tested"
+    },
+    {
+      "from": "ui",
+      "to": "api",
+      "level": "tested"
+    },
+    {
+      "from": "api",
+      "to": "vault",
+      "level": "tested"
+    },
+    {
+      "from": "api",
       "to": "monitor",
-      "label": "will read",
-      "level": "untested"
+      "label": "HTTPS + bearer",
+      "level": "tested"
     },
     {
-      "from": "app",
-      "to": "far",
-      "label": "runs on",
-      "level": "untested"
+      "from": "vault",
+      "to": "android",
+      "label": "seals",
+      "level": "config"
+    },
+    {
+      "from": "rules",
+      "to": "push",
+      "label": "gate",
+      "level": "config"
     }
   ],
   "legend": {
-    "tested": "tested in CI",
-    "untested": "planned, not built",
-    "config": "needs a device",
+    "tested": "tested on the JVM in CI",
+    "untested": "built from the code, not run on a phone",
+    "config": "needs a phone or a Google project",
     "external": "outside this repository"
   },
-  "footer": "Nothing here has been built or run yet: this repository is only the base."
+  "footer": "Nothing here has been run on a phone or against a real monitor yet."
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What lint is told to leave alone, and why. Everything else is checked. -->
+<lint>
+    <!-- Plain HTTP stays allowed by the configuration because a monitor on the home network often has no certificate; the address typed is accepted over http only for localhost, a .local
+         name or a private IPv4 literal (MonitorUrl). A network security configuration cannot name a range of addresses, so it cannot say "only the house". -->
+    <issue id="InsecureBaseConfiguration" severity="ignore" />
+    <!-- allowBackup is false: nothing of the app is backed up, on any version of Android; the rules of data extraction only add to that on Android 12 and later. -->
+    <issue id="DataExtractionRules" severity="ignore" />
+    <!-- Newer versions of libraries and of the build tools exist all the time; the maintainer moves them on purpose, together, and tests the result on a phone. -->
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+    <!-- The adaptive icon lives in the folder for Android 8 and later, which is every version this app runs on. -->
+    <issue id="ObsoleteSdkInt"><ignore path="src/main/res/mipmap-anydpi-v26" /></issue>
+    <!-- The Kotlin extension functions of AndroidX are a matter of taste, not of behaviour. -->
+    <issue id="UseKtx" severity="ignore" />
+</lint>

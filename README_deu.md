@@ -6,22 +6,24 @@
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | 🇩🇪 <b>Deutsch</b> | <a href="README_zho.md">🇨🇳 中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
-### Geplante Android-App für GitHub Actions Monitor: der Zustand deiner Workflows und die Warnungen deines eigenen Monitors auf dem Smartphone. Nur ein Gerüst: noch nichts ist umgesetzt.
+### Native Android-App für den GitHub Actions Monitor: Übersicht, Warnungen, Repositorys und Vorschläge auf dem Telefon, mit Push-Benachrichtigungen nur für kritische Fälle, standardmäßig aus.
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
-  <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose%20(planned)-blue.svg" alt="Kotlin and Jetpack Compose (planned)">
+  <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-none%20yet-lightgrey.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-77-2EA043.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Ehrlichkeitsprüfung - was heute tatsächlich läuft:** nichts von der App. Dieses Repository enthält nur ihre Grundlage: die Dokumente, das Manifest, die Lizenz und die gemeinsamen Repository-Prüfungen. Es gibt keinen Code, kein APK, keinen Bildschirm, keinen Benachrichtigungsdienst und keinen Test der App, und nichts wurde auf einem Smartphone ausprobiert.
+**Ehrlichkeitscheck - was heute tatsächlich läuft:** Die Regeln und der API-Client sind mit Unit-Tests geschrieben, die im CI auf der JVM laufen; die App wurde noch nicht zu einer APK gebaut, nicht auf einem Telefon gezeigt und hat nie mit einem echten Monitor gesprochen. Push-Benachrichtigungen sind standardmäßig aus und kein Push-Dienst ist verbunden.
 
 ---
+
+> **Stand von Sicherheit und IT-Sicherheit:** Diese App liest einen Monitor und kann Aktionsvorschläge genehmigen oder ablehnen, die Workflows wiederholen oder auf GitHub kommentieren können. Eine Genehmigung ist an den genau gezeigten Inhalt gebunden, eine andere Person muss genehmigen (der Monitor erzwingt das) und ein Link genehmigt nie von selbst. Sie ist kein Sicherheitssystem (Safety) für eine Maschine.
 
 ## 📋 Auf einen Blick
 
@@ -29,9 +31,9 @@
 |---|---|
 | Version | `0.0.1` |
 | Reifegrad | Gerüst |
-| Tests | Noch keine (nur die Prüfungen des Repositorys) |
-| Technologie-Stack | Kotlin und Jetpack Compose (geplant) |
-| Auf echter Hardware | Nicht auf einem Smartphone ausgeführt |
+| Tests | 77 |
+| Technologie-Stack | Kotlin, Jetpack Compose (Android 8.0+) |
+| Auf echter Hardware | Noch nicht auf einem Telefon ausgeführt |
 
 **Springe zu:** [Überblick](#-überblick) · [Architektur](#-architektur) · [Schnellstart](#-schnellstart) · [Tests](#-tests) · [Struktur des Repositorys](#-struktur-des-repositorys) · [Verwandte Projekte](#-verwandte-projekte)
 
@@ -43,22 +45,22 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
-| Grundlage des Repositorys | 🟡 | Das Manifest, die README-Dateien in acht Sprachen, die Lizenz und die gemeinsamen Repository-Prüfungen laufen in der CI. |
-| Code der App | 🔴 | Nicht begonnen: in diesem Repository gibt es noch kein Android-Projekt. |
-| Tests | 🔴 | Die App hat keine Tests; es laufen nur die Prüfungen des Repositorys. |
-| Verbindung zum Monitor | 🔴 | Nicht begonnen. Der Monitor bietet eine Lese-API, die ein Client nutzen kann; diese App nutzt sie noch nicht. |
-| Smartphone und Benachrichtigungen | 🔴 | Nicht begonnen und nie auf einem Smartphone ausgeführt; kein Benachrichtigungsdienst ist angebunden. |
+| Repository-Prüfungen | 🟡 | Die Repository-Prüfung, die Bildprüfung, die leichten Prüfungen der App (acht Sprachen, Ressourcen, Geheimnisse) und ihre Tests laufen im CI. |
+| Regeln und API-Client | 🟠 | 69 JVM-Unit-Tests sind geschrieben (Genehmigung, Links, Push-Filter, Einstellungen, der Client gegen ein simuliertes Netz); die CI führt sie mit Gradle aus und prüft, wie viele gelaufen sind. |
+| Bildschirme und Keystore | 🔴 | Geschrieben und in der CI kompiliert, aber nie auf einem Bildschirm gezeigt und nie auf einem Telefon ausgeführt. |
+| Push-Benachrichtigungen | 🟠 | Nur kritisch und standardmäßig aus; die Firebase-Seite ist eine Null-Implementierung, bis es ein Google-Projekt gibt. |
+| Routen des Monitors | 🟠 | Die Lese-Routen folgen dem API-v1-Vertrag des Monitors; die Vorschlags- und Geräte-Routen, die die App aufruft, sind noch nicht im Monitor. |
 
 ## 🎯 Überblick
 
-* **Was es sein wird:** eine Android-App, die auf deinem Smartphone den Zustand der Workflows und die Warnungen deines eigenen GitHub Actions Monitors zeigt.
-* **Nur Lesen:** sie liest nur aus deinem Monitor. Sie schreibt nicht in GitHub und ändert nichts im Monitor.
-* **Dein Monitor, deine Daten:** sie spricht mit dem Monitor, den du selbst betreibst, mit einem Zugriffstoken, das du ihr gibst; es liegt kein Dienst von uns dazwischen.
-* **Was es (noch) nicht ist:** es gibt keine App zum Installieren, kein Release und kein Datum. Dieses Repository reserviert nur ihren Platz und sagt ehrlich, was geplant ist.
+* **Der Monitor in der Tasche:** Übersicht, Warnungen, Repositorys und Vorschläge eines GitHub Actions Monitors, gelesen mit einem Bearer-Token über seine API v1.
+* **Entscheidungen im Vier-Augen-Prinzip:** Einen Vorschlag genehmigen oder ablehnen, nachdem man seinen genauen Inhalt gesehen hat; die Genehmigung ist an den Hash dieses Inhalts gebunden und der Monitor lehnt sie ab, wenn dieselbe Person den Vorschlag erstellt hat.
+* **Standardmäßig still:** Push-Benachrichtigungen sind aus, nur kritisch, einmal pro Warnung, mit kurzem Titel und sonst nichts.
+* **Nichts Geheimes im Repository:** Der Token wird mit einem Schlüssel des Android Keystore versiegelt; hier liegen keine Firebase-Datei, kein Schlüssel und kein Keystore.
 
 ## 🧩 Rolle in EH3D
 
-TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID soll der Android-Client von GitHub Actions Monitor werden ([TOOLS-GITHUB-ACTIONS-MONITOR](https://github.com/JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR)). Sie würde zeigen, was der Monitor schon weiß, und selbst nichts entscheiden. Eine minimale Smartwatch-Version, [TOOLS-GITHUB-ACTIONS-MONITOR-WATCH](https://github.com/JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR-WATCH), soll dieser App folgen.
+TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID ist die Android-App des GitHub Actions Monitors (TOOLS-GITHUB-ACTIONS-MONITOR). Sie ist ein Client: Sie berechnet keine eigenen Regeln zu Warnungen oder Vorschlägen; der Monitor entscheidet, was kritisch ist und was ein Vorschlag ist, und die App zeigt es an und fragt eine Person.
 
 ## 🏛️ Architektur
 
@@ -70,25 +72,38 @@ Wie die Teile dieses Repositorys zusammenpassen: wer es nutzt, was es enthält u
 
 ## ✨ Funktionen
 
-**Geplant, und nichts davon existiert bisher:**
-* Die Zusammenfassung deiner Workflows (was rot ist, hängt oder wartet) und die Warnungen des Monitors.
-* Eine Liste der Repositorys mit ihrem Zustand.
-* Optionale Benachrichtigungen bei wichtigen Warnungen, standardmäßig aus.
-* Texte in acht Sprachen.
-
-**Nicht geplant:** in GitHub zu schreiben, Workflows vom Smartphone aus neu zu starten oder deine Daten an einen anderen Dienst als deinen eigenen Monitor zu senden.
+* Fünf Bildschirme: Übersicht, Warnungen (Filter nach Stufe, Blättern mit Cursorn), Repositorys (die mit Warnungen und eine Suche für jedes Repository), Vorschläge (ausstehend oder alle, mit Details) und Einstellungen.
+* Einen Vorschlag nach einer Bestätigung genehmigen oder ablehnen, die den Inhalts-Hash nennt; hast du in den Einstellungen deinen Namen angegeben, wird dir ein selbst erstellter Vorschlag nicht zur Genehmigung angeboten.
+* Links `ghamon://proposal/<id>?hash=<hex>` öffnen einen Vorschlag; hat sich sein Inhalt seit dem Erstellen des Links geändert, wird keine Genehmigung angeboten.
+* Geräteregistrierung für Push-Benachrichtigungen nur bei kritischen Fällen, standardmäßig aus.
+* Acht Sprachen, die der Sprache des Telefons folgen: Englisch, Spanisch, Deutsch, Französisch, Italienisch, Japanisch, Chinesisch und europäisches Portugiesisch.
 
 ## 🔒 Sicherheit und Schutz
 
-* Beabsichtigt: die App liest nur, und das Zugriffstoken bleibt auf dem Smartphone und wird nur an die Adresse deines Monitors gesendet.
-* Nichts Geheimes gehört in dieses Repository: kein Schlüssel, kein Token, keine Datei eines Benachrichtigungsdienstes und kein Signaturschlüssel.
-* Das sind Entwurfsabsichten. Nichts davon existiert bisher, daher konnte es niemand prüfen.
+* Der Token wird mit AES-GCM unter einem Schlüssel versiegelt, der im Android Keystore liegt, wird nie in ein Log oder einen Fehlertext geschrieben und nur an die eingegebene Adresse gesendet; Weiterleitungen werden nie verfolgt.
+* Unverschlüsseltes `http://` wird nur für localhost, `.local`-Namen und private IPv4-Adressen akzeptiert; jeder andere Host braucht `https://`, geprüft nur gegen die Zertifizierungsstellen des Systems.
+* Eine Genehmigung trägt den Hash des Inhalts, der auf dem Bildschirm stand; ein Link öffnet nur einen Vorschlag und genehmigt oder führt nie etwas aus.
+* Push-Benachrichtigungen sind standardmäßig aus, nur kritisch und tragen einen kurzen, bereinigten Titel: keine Logs, keine Repository-Geheimnisse.
+* Die App-Daten sind von Sicherungen ausgenommen, und `python -I tools/check_app.py` schlägt fehl, wenn eine Firebase-Datei, ein Keystore oder ein Schlüssel im Baum liegt.
+
+## 🔌 Schnittstellen
+
+* Lesezugriffe auf den Monitor: `GET /api/v1/health`, `/status`, `/accounts`, `/accounts/{id}/status`, `/alerts` (Cursor-Paging, Filter) und `/repos/{owner}/{repo}/health`, mit `Authorization: Bearer` und `X-API-Version: 1`.
+* Vorschläge (Routen, die die App annimmt, alle in der Konfigurationsdatei): `GET /api/v1/actions/proposals`, `GET .../{id}`, `POST .../{id}/approve` mit `expected_hash` und `POST .../{id}/reject`.
+* Geräte: `POST /api/v1/devices` und `DELETE /api/v1/devices/{id}`.
+* Link: `ghamon://proposal/<id>?hash=<64 Hexadezimalzeichen>`.
+
+## ⚙️ Konfiguration
+
+Jeder einstellbare Wert steht in `app/src/main/assets/app_config.json`: die Pfade, die Zeitlimits, die Seitengröße, die Push-Vorgaben und das Link-Schema. Die Adresse des Monitors, sein Token und dein Name werden in den Einstellungen der App eingegeben und auf dem Telefon gespeichert. Nichts Einstellbares steht im Code.
 
 ## 🚀 Schnellstart
 
-Es gibt noch nichts zu installieren oder auszuführen. Um die Grundlage dieses Repositorys zu prüfen, brauchst du Python 3.10 oder neuer:
+Zum Bauen brauchst du JDK 21 und das Android SDK (Android Studio bringt beides mit); die leichten Prüfungen brauchen nur Python 3.10 oder neuer. Öffne die App, gehe zu Einstellungen, gib die Adresse deines Monitors und seinen Token ein und speichere.
 
 ```bash
+./gradlew testDebugUnitTest lintDebug
+python -I tools/check_app.py
 python -I tools/ci_validate.py
 python -I tools/make_architecture.py --check
 python -I tools/make_structure.py --check --readmes
@@ -97,11 +112,11 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 Tests
 
-Die CI führt die Prüfungen des Repositorys und die Tests dieser Prüfungen aus. Die App hat keine eigenen Tests, weil sie noch keinen Code hat, und hier wird keine Testzahl behauptet.
+69 Unit-Tests laufen auf der JVM (`./gradlew testDebugUnitTest`) ohne Telefon: der API-Client gegen ein simuliertes Netz, die Regeln, die Links, der Push-Filter und die Einstellungen. 8 Python-Tests decken das Repository und die leichten Prüfungen der App ab. Das CI führt alle aus; nichts davon wurde auf einem Telefon ausgeführt.
 
 ## 🏗️ Build und Veröffentlichung
 
-Es gibt weder Build noch Release, weil keine Version der App existiert. Die Version `0.0.1` in `VERSION`, im Manifest und im Changelog ist die der Grundlage des Repositorys.
+Die Version steht in `VERSION`, in `electro-hobby-3d.project.json` und in `app/build.gradle.kts` (der Build bricht ab, wenn sie sich unterscheiden), und jede Version hat ihren Eintrag im [CHANGELOG.md](CHANGELOG.md). Der Release-Build wird mit R8 verkleinert und danach mit dem eigenen Schlüssel des Maintainers signiert, der außerhalb des Repositorys liegt. Es ist noch keine APK veröffentlicht.
 
 ## 📂 Struktur des Repositorys
 
@@ -114,17 +129,32 @@ Es gibt weder Build noch Release, weil keine Version der App existiert. Die Vers
 
 ```text
 MONITOR-ANDROID/
+├── app/
+│   ├── build.gradle.kts proguard-rules.pro                der Build und die Verkleinerungsregeln
+│   ├── src/main/AndroidManifest.xml                       Berechtigungen, Aktivität, Link ghamon://
+│   ├── src/main/assets/app_config.json                    Pfade, Zeitlimits, Seitengröße, Push-Vorgaben
+│   ├── src/main/res/                                      die Texte in acht Sprachen, Symbole und Themes
+│   ├── src/main/java/es/electrohobby3d/ghamonitor/core/   auf der JVM getestete Regeln
+│   ├── src/main/java/es/electrohobby3d/ghamonitor/        Bildschirme, View-Model, Keystore, Push
+│   └── src/test/java/es/electrohobby3d/ghamonitor/core/   die Unit-Tests auf der JVM
 ├── tools/
-│   ├── ci_validate.py                           Manifest, Versionen, README-Parität
-│   └── make_architecture.py make_structure.py   zeichnen die beiden Bilder des README
-├── docs/                                        die Quellen der beiden Bilder
-├── images/                                      Banner und die beiden Bilder
-├── .github/                                     CI-Workflows und Vorlagen
-├── VERSION                                      die Version des Repositorys
-├── electro-hobby-3d.project.json                das Manifest des Projekts
-├── CHANGELOG.md                                 was sich in jeder Version geändert hat
-├── SECURITY.md SUPPORT.md                       Schwachstellen melden und Fragen stellen
-└── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE   Mitwirken, Verhaltenskodex und Lizenz
+│   ├── ci_validate.py                                     Manifest, Versionen, README-Parität
+│   ├── check_app.py                                       Sprachen, Ressourcen, Konfiguration und Geheimnisse der App
+│   └── make_architecture.py make_structure.py             zeichnen die beiden Bilder des README
+├── docs/                                                  die Quellen der beiden Bilder
+├── gradle/                                                die Dateien des Gradle-Wrappers
+├── gradlew                                                der Gradle-Wrapper
+├── gradlew.bat                                            der Gradle-Wrapper
+├── build.gradle.kts                                       die Plugins und der Name des Builds
+├── settings.gradle.kts                                    die Plugins und der Name des Builds
+├── gradle.properties                                      der Speicher des Builds
+├── images/                                                Banner und die beiden Bilder
+├── .github/                                               CI-Workflows und Vorlagen
+├── VERSION                                                die Version des Repositorys
+├── electro-hobby-3d.project.json                          das Manifest des Projekts
+├── CHANGELOG.md                                           was sich in jeder Version geändert hat
+├── SECURITY.md SUPPORT.md                                 Schwachstellen melden und Fragen stellen
+└── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE             Mitwirken, Verhaltenskodex und Lizenz
 ```
 
 </details>
@@ -133,13 +163,14 @@ MONITOR-ANDROID/
 
 **Bekannte Grenzen heute**
 
-* Es gibt keinen Code: keine App, kein APK, keinen Bildschirm.
-* Nichts wurde auf einem Smartphone oder mit einem echten Monitor ausprobiert.
-* Der endgültige Umfang hängt von der Lese-API des Monitors ab und kann sich ändern.
+* Die App wurde nicht zu einer APK gebaut, nicht auf einem Telefon ausgeführt und nicht gegen einen echten Monitor erprobt.
+* Die Vorschlags- und Geräte-Routen, die sie aufruft, sind noch nicht im Monitor.
+* Es gibt keinen Push-Dienst: Er braucht ein Google-Projekt und einen Schlüssel, die nur der Maintainer erstellen kann.
+* Noch keine biometrische Bestätigung vor einer Genehmigung.
 
 **Als Nächstes**
 
-* Die ersten Bildschirme festlegen, die App Schritt für Schritt mit ihren Tests in der CI bauen und sie erst dann hier als funktionierend beschreiben.
+* Das erste CI ausführen und beheben, was es findet, die Routen des Monitors verbinden und dann den Firebase-Push-Dienst ergänzen, wenn das Google-Projekt existiert.
 
 ## 🌍 Sprachen
 
@@ -147,8 +178,7 @@ README und Texte gibt es auf Englisch, Spanisch, Französisch, Italienisch, Deut
 
 ## 🔗 Verwandte Projekte
 
-* [TOOLS-GITHUB-ACTIONS-MONITOR](https://github.com/JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR): der Monitor, den diese App lesen soll
-* [TOOLS-GITHUB-ACTIONS-MONITOR-WATCH](https://github.com/JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR-WATCH): die geplante minimale Smartwatch-Version, die dieser App folgt
+* [TOOLS-GITHUB-ACTIONS-MONITOR](https://github.com/JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR): der Monitor, dessen Client diese App ist
 * [EH3D-DOCS](https://github.com/JuanenRac/EH3D-DOCS): die Konventionen und die gemeinsamen Prüfungen
 
 ## 📚 Dokumentation
@@ -158,9 +188,9 @@ README und Texte gibt es auf Englisch, Spanisch, Französisch, Italienisch, Deut
 
 ## 🤝 Mitwirken und Community
 
-* Führe vor einem Pull Request `python -I tools/ci_validate.py` aus; die übrigen Prüfungen laufen in der CI. Siehe [CONTRIBUTING.md](CONTRIBUTING.md) und den [Verhaltenskodex](CODE_OF_CONDUCT.md).
-* Das README gibt es in acht Sprachen: Eine Textänderung wird in allen acht Dateien vorgenommen, und die beiden Bilder werden aus `docs/architecture.json` und `docs/structure.json` mit `tools/make_architecture.py` und `tools/make_structure.py` gezeichnet.
-* Melde eine Sicherheitslücke privat: [SECURITY.md](SECURITY.md). Fragen, Ideen und Meldungen: electrohobby3d@gmail.com ([SUPPORT.md](SUPPORT.md)).
+* Führe vor einer Pull Request `python -I tools/ci_validate.py` und `python -I tools/check_app.py` aus; der Gradle-Build, die Tests und das Lint laufen im CI. Siehe [CONTRIBUTING.md](CONTRIBUTING.md) und den [Verhaltenskodex](CODE_OF_CONDUCT.md).
+* Das README gibt es in acht Sprachen: Eine Textänderung wird in allen acht Dateien gemacht, und die beiden Bilder werden aus `docs/architecture.json` und `docs/structure.json` mit `tools/make_architecture.py` und `tools/make_structure.py` gezeichnet.
+* Melde eine Schwachstelle privat: [SECURITY.md](SECURITY.md). Fragen, Ideen und Meldungen: electrohobby3d@gmail.com ([SUPPORT.md](SUPPORT.md)).
 
 ## 👤 AUTOR
 
