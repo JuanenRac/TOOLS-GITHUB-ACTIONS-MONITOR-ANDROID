@@ -1,6 +1,6 @@
 # Security policy
 
-TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID is at its first steps and has no code yet. It is planned as a client that only reads from the monitor of its user, so please report anything in this repository that could expose a secret, a token or a key, or any statement here that would make a reader trust something that does not exist yet.
+TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID is at its first steps. It holds the access token of a GitHub Actions Monitor and can approve or reject action proposals, so please report a vulnerability, or anything that could make the app send the token to the wrong place, show or approve something the person did not see, or keep a secret in clear text.
 
 ## Reporting a problem
 
@@ -8,7 +8,9 @@ Please report it privately to **electrohobby3d@gmail.com**, with what you found 
 
 Only the latest version is supported.
 
-## What this repository promises
+## What the app promises
 
-* No secret belongs here: no key, no token, no push-service file and no signing key.
-* Nothing is claimed to work that has not been run; today there is no application code at all.
+* The token is kept sealed with a key of the Android Keystore, is never written to a log or to an error text and is sent only to the address that was typed; redirects are not followed.
+* Plain `http://` is accepted only for localhost, `.local` names and private IPv4 addresses.
+* An approval is bound to the hash of the content that was on the screen, and a link only opens a proposal.
+* Push notifications are off by default and critical-only; no Firebase file, key or keystore is part of this repository.

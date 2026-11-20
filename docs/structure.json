@@ -2,8 +2,125 @@
   "repo": "MONITOR-ANDROID",
   "ecosystem": "eh3d",
   "svg": "en",
-  "exempt": [],
+  "exempt": [
+    "electro-hobby-3d.project.json"
+  ],
   "cards": [
+    {
+      "name": "app/",
+      "span": 3,
+      "accent": "a",
+      "sub": {
+        "en": "the Android app",
+        "es": "la app Android",
+        "de": "die Android-App",
+        "fr": "l'application Android",
+        "it": "l'app Android",
+        "ja": "Android アプリ",
+        "zh": "Android 应用",
+        "pt": "a aplicação Android"
+      },
+      "rows": [
+        {
+          "name": "build.gradle.kts  proguard-rules.pro",
+          "desc": {
+            "en": "the build and the shrinking rules",
+            "es": "la compilación y las reglas de reducción",
+            "de": "der Build und die Verkleinerungsregeln",
+            "fr": "la compilation et les règles de réduction",
+            "it": "la compilazione e le regole di riduzione",
+            "ja": "ビルドと縮小ルール",
+            "zh": "构建和压缩规则",
+            "pt": "a compilação e as regras de redução"
+          },
+          "tree_name": "build.gradle.kts proguard-rules.pro"
+        },
+        {
+          "name": "src/main/AndroidManifest.xml",
+          "desc": {
+            "en": "permissions, activity, ghamon:// link",
+            "es": "permisos, actividad, enlace ghamon://",
+            "de": "Berechtigungen, Aktivität, Link ghamon://",
+            "fr": "permissions, activité, lien ghamon://",
+            "it": "permessi, activity, link ghamon://",
+            "ja": "権限、アクティビティ、ghamon:// リンク",
+            "zh": "权限、活动、ghamon:// 链接",
+            "pt": "permissões, atividade, ligação ghamon://"
+          },
+          "tree_name": "src/main/AndroidManifest.xml"
+        },
+        {
+          "name": "src/main/assets/app_config.json",
+          "desc": {
+            "en": "paths, timeouts, page size, push defaults",
+            "es": "rutas, tiempos, página, valores de push",
+            "de": "Pfade, Zeitlimits, Seitengröße, Push-Vorgaben",
+            "fr": "chemins, délais, page, valeurs push",
+            "it": "percorsi, timeout, pagina, valori push",
+            "ja": "パス、タイムアウト、ページサイズ、プッシュ初期値",
+            "zh": "路径、超时、页面大小、推送默认值",
+            "pt": "caminhos, tempos limite, página, valores de push"
+          },
+          "tree_name": "src/main/assets/app_config.json"
+        },
+        {
+          "name": "src/main/res/",
+          "desc": {
+            "en": "the texts in eight languages, icons and themes",
+            "es": "los textos en ocho idiomas, iconos y temas",
+            "de": "die Texte in acht Sprachen, Symbole und Themes",
+            "fr": "les textes en huit langues, icônes et thèmes",
+            "it": "i testi in otto lingue, icone e temi",
+            "ja": "8 言語のテキスト、アイコン、テーマ",
+            "zh": "八种语言的文本、图标和主题",
+            "pt": "os textos em oito idiomas, ícones e temas"
+          },
+          "tree_name": "src/main/res/"
+        },
+        {
+          "name": "src/main/java/es/electrohobby3d/ghamonitor/core/",
+          "desc": {
+            "en": "rules tested on the JVM",
+            "es": "reglas probadas en la JVM",
+            "de": "auf der JVM getestete Regeln",
+            "fr": "règles testées sur la JVM",
+            "it": "regole testate sulla JVM",
+            "ja": "JVM でテスト済みのルール",
+            "zh": "在 JVM 上测试的规则",
+            "pt": "regras testadas na JVM"
+          },
+          "tree_name": "src/main/java/es/electrohobby3d/ghamonitor/core/"
+        },
+        {
+          "name": "src/main/java/es/electrohobby3d/ghamonitor/",
+          "desc": {
+            "en": "screens, view model, Keystore, push",
+            "es": "pantallas, view model, Keystore, push",
+            "de": "Bildschirme, View-Model, Keystore, Push",
+            "fr": "écrans, view model, Keystore, push",
+            "it": "schermate, view model, Keystore, push",
+            "ja": "画面、ViewModel、Keystore、プッシュ",
+            "zh": "界面、视图模型、Keystore、推送",
+            "pt": "ecrãs, view model, Keystore, push"
+          },
+          "tree_name": "src/main/java/es/electrohobby3d/ghamonitor/"
+        },
+        {
+          "name": "src/test/java/es/electrohobby3d/ghamonitor/core/",
+          "desc": {
+            "en": "the unit tests on the JVM",
+            "es": "las pruebas unitarias en la JVM",
+            "de": "die Unit-Tests auf der JVM",
+            "fr": "les tests unitaires sur la JVM",
+            "it": "i test unitari sulla JVM",
+            "ja": "JVM 上のユニットテスト",
+            "zh": "JVM 上的单元测试",
+            "pt": "os testes unitários na JVM"
+          },
+          "tree_name": "src/test/java/es/electrohobby3d/ghamonitor/core/"
+        }
+      ]
+    },
     {
       "name": "tools/",
       "span": 3,
@@ -32,6 +149,20 @@
             "pt": "manifesto, versões, paridade dos README"
           },
           "tree_name": "ci_validate.py"
+        },
+        {
+          "name": "check_app.py",
+          "desc": {
+            "en": "languages, resources, config and secrets of the app",
+            "es": "idiomas, recursos, configuración y secretos de la app",
+            "de": "Sprachen, Ressourcen, Konfiguration und Geheimnisse der App",
+            "fr": "langues, ressources, configuration et secrets de l'application",
+            "it": "lingue, risorse, configurazione e segreti dell'app",
+            "ja": "アプリの言語、リソース、設定、機密",
+            "zh": "应用的语言、资源、配置和机密",
+            "pt": "idiomas, recursos, configuração e segredos da aplicação"
+          },
+          "tree_name": "check_app.py"
         },
         {
           "name": "make_architecture.py  make_structure.py",
@@ -79,6 +210,62 @@
           "tree_name": "docs/"
         },
         {
+          "name": "gradle/",
+          "desc": {
+            "en": "the files of the Gradle wrapper",
+            "es": "los archivos del wrapper de Gradle",
+            "de": "die Dateien des Gradle-Wrappers",
+            "fr": "les fichiers du wrapper Gradle",
+            "it": "i file del wrapper Gradle",
+            "ja": "Gradle ラッパーのファイル",
+            "zh": "Gradle 包装器文件",
+            "pt": "os ficheiros do wrapper do Gradle"
+          },
+          "tree_name": "gradle/"
+        },
+        {
+          "name": "gradlew  gradlew.bat",
+          "desc": {
+            "en": "the Gradle wrapper",
+            "es": "el wrapper de Gradle",
+            "de": "der Gradle-Wrapper",
+            "fr": "le wrapper Gradle",
+            "it": "il wrapper Gradle",
+            "ja": "Gradle ラッパー",
+            "zh": "Gradle 包装器",
+            "pt": "o wrapper do Gradle"
+          },
+          "tree_name": "gradlew gradlew.bat"
+        },
+        {
+          "name": "build.gradle.kts  settings.gradle.kts",
+          "desc": {
+            "en": "the plugins and the name of the build",
+            "es": "los plugins y el nombre de la compilación",
+            "de": "die Plugins und der Name des Builds",
+            "fr": "les plugins et le nom du build",
+            "it": "i plugin e il nome della build",
+            "ja": "プラグインとビルド名",
+            "zh": "插件和构建名称",
+            "pt": "os plugins e o nome da compilação"
+          },
+          "tree_name": "build.gradle.kts settings.gradle.kts"
+        },
+        {
+          "name": "gradle.properties",
+          "desc": {
+            "en": "the memory of the build",
+            "es": "la memoria de la compilación",
+            "de": "der Speicher des Builds",
+            "fr": "la mémoire du build",
+            "it": "la memoria della build",
+            "ja": "ビルドのメモリ設定",
+            "zh": "构建的内存设置",
+            "pt": "a memória da compilação"
+          },
+          "tree_name": "gradle.properties"
+        },
+        {
           "name": "images/",
           "desc": {
             "en": "banner and the two pictures",
@@ -119,20 +306,6 @@
             "pt": "a versão do repositório"
           },
           "tree_name": "VERSION"
-        },
-        {
-          "name": "electro-hobby-3d.project.json",
-          "desc": {
-            "en": "the manifest of the project",
-            "es": "el manifiesto del proyecto",
-            "de": "das Manifest des Projekts",
-            "fr": "le manifeste du projet",
-            "it": "il manifesto del progetto",
-            "ja": "プロジェクトのマニフェスト",
-            "zh": "项目清单",
-            "pt": "o manifesto do projeto"
-          },
-          "tree_name": "electro-hobby-3d.project.json"
         },
         {
           "name": "CHANGELOG.md",
