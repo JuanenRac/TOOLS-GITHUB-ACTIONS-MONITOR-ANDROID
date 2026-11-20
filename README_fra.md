@@ -46,8 +46,8 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Contrôles du dépôt | 🟡 | Le contrôle du dépôt, celui des images, les contrôles légers de l'application (huit langues, ressources, secrets) et leurs tests s'exécutent dans la CI. |
-| Règles et client de l'API | 🟠 | 69 tests unitaires JVM sont écrits (approbation, liens, filtre push, réglages, le client face à un réseau simulé) ; la compilation Gradle qui les exécute n'a pas encore tourné. |
-| Écrans et Keystore | 🔴 | Écrits, mais jamais compilés, jamais affichés sur un écran et jamais exécutés sur un téléphone. |
+| Règles et client de l'API | 🟠 | 69 tests unitaires JVM sont écrits (approbation, liens, filtre push, réglages, le client face à un réseau simulé) ; la CI les exécute avec Gradle et vérifie combien ont tourné. |
+| Écrans et Keystore | 🔴 | Écrits et compilés en CI, mais jamais affichés sur un écran et jamais exécutés sur un téléphone. |
 | Notifications push | 🟠 | Uniquement critiques et désactivées par défaut ; la partie Firebase est une implémentation nulle tant qu'aucun projet Google n'existe. |
 | Routes du moniteur | 🟠 | Les routes de lecture suivent le contrat de l'API v1 du moniteur ; les routes de propositions et d'appareils appelées par l'application ne sont pas encore dans le moniteur. |
 

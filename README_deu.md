@@ -46,8 +46,8 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Repository-Prüfungen | 🟡 | Die Repository-Prüfung, die Bildprüfung, die leichten Prüfungen der App (acht Sprachen, Ressourcen, Geheimnisse) und ihre Tests laufen im CI. |
-| Regeln und API-Client | 🟠 | 69 JVM-Unit-Tests sind geschrieben (Genehmigung, Links, Push-Filter, Einstellungen, der Client gegen ein simuliertes Netz); der Gradle-Build, der sie ausführt, ist noch nicht gelaufen. |
-| Bildschirme und Keystore | 🔴 | Geschrieben, aber nie gebaut, nie auf einem Bildschirm gezeigt und nie auf einem Telefon ausgeführt. |
+| Regeln und API-Client | 🟠 | 69 JVM-Unit-Tests sind geschrieben (Genehmigung, Links, Push-Filter, Einstellungen, der Client gegen ein simuliertes Netz); die CI führt sie mit Gradle aus und prüft, wie viele gelaufen sind. |
+| Bildschirme und Keystore | 🔴 | Geschrieben und in der CI kompiliert, aber nie auf einem Bildschirm gezeigt und nie auf einem Telefon ausgeführt. |
 | Push-Benachrichtigungen | 🟠 | Nur kritisch und standardmäßig aus; die Firebase-Seite ist eine Null-Implementierung, bis es ein Google-Projekt gibt. |
 | Routen des Monitors | 🟠 | Die Lese-Routen folgen dem API-v1-Vertrag des Monitors; die Vorschlags- und Geräte-Routen, die die App aufruft, sind noch nicht im Monitor. |
 

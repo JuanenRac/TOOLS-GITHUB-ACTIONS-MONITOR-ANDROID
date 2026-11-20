@@ -46,8 +46,8 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Comprobaciones del repositorio | 🟡 | La comprobación del repositorio, la de las imágenes, las comprobaciones ligeras de la app (ocho idiomas, recursos, secretos) y sus pruebas se ejecutan en el CI. |
-| Reglas y cliente de la API | 🟠 | Hay 69 pruebas unitarias en la JVM escritas (aprobación, enlaces, filtro push, ajustes, el cliente contra una red simulada); la compilación de Gradle que las ejecuta aún no se ha ejecutado. |
-| Pantallas y Keystore | 🔴 | Escritas, pero nunca compiladas, nunca mostradas en una pantalla y nunca ejecutadas en un móvil. |
+| Reglas y cliente de la API | 🟠 | Hay 69 pruebas unitarias en la JVM escritas (aprobación, enlaces, filtro push, ajustes, el cliente contra una red simulada); la CI las ejecuta con Gradle y comprueba cuántas se han ejecutado. |
+| Pantallas y Keystore | 🔴 | Escritas y compiladas en CI, pero nunca mostradas en una pantalla y nunca ejecutadas en un móvil. |
 | Notificaciones push | 🟠 | Solo críticas y desactivadas por defecto; la parte de Firebase es una implementación nula hasta que exista un proyecto de Google. |
 | Rutas del monitor | 🟠 | Las rutas de lectura siguen el contrato de la API v1 del monitor; las rutas de propuestas y dispositivos que llama la app aún no están en el monitor. |
 

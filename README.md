@@ -46,8 +46,8 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Repository checks | 🟡 | The repository check, the check of the pictures, the light checks of the app (eight languages, resources, secrets) and their tests run in CI. |
-| Rules and API client | 🟠 | 69 JVM unit tests are written (approval, links, push gate, settings, the client against a fake network); the Gradle build that runs them has not run yet. |
-| Screens and Keystore | 🔴 | Written, but never built, never shown on a screen and never run on a phone. |
+| Rules and API client | 🟠 | 69 JVM unit tests are written (approval, links, push gate, settings, the client against a fake network); the CI runs them with Gradle and checks how many ran. |
+| Screens and Keystore | 🔴 | Written and compiled in CI, but never shown on a screen and never run on a phone. |
 | Push notifications | 🟠 | Critical-only and off by default; the Firebase side is a null implementation until a Google project exists. |
 | Monitor routes | 🟠 | The read routes follow the API v1 contract of the monitor; the proposal and device routes the app calls are not in the monitor yet. |
 

@@ -46,8 +46,8 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Area | Stato | Cosa significa qui |
 |---|---|---|
 | Controlli del repository | 🟡 | Il controllo del repository, quello delle immagini, i controlli leggeri dell'app (otto lingue, risorse, segreti) e i loro test vengono eseguiti nella CI. |
-| Regole e client dell'API | 🟠 | Sono scritti 69 test unitari sulla JVM (approvazione, link, filtro push, impostazioni, il client contro una rete simulata); la build Gradle che li esegue non è ancora stata eseguita. |
-| Schermate e Keystore | 🔴 | Scritte, ma mai compilate, mai mostrate su uno schermo e mai eseguite su un telefono. |
+| Regole e client dell'API | 🟠 | Sono scritti 69 test unitari sulla JVM (approvazione, link, filtro push, impostazioni, il client contro una rete simulata); la CI li esegue con Gradle e verifica quanti sono stati eseguiti. |
+| Schermate e Keystore | 🔴 | Scritte e compilate in CI, ma mai mostrate su uno schermo e mai eseguite su un telefono. |
 | Notifiche push | 🟠 | Solo critiche e disattivate per impostazione predefinita; la parte Firebase è un'implementazione nulla finché non esiste un progetto Google. |
 | Percorsi del monitor | 🟠 | I percorsi di lettura seguono il contratto dell'API v1 del monitor; i percorsi di proposte e dispositivi che l'app chiama non sono ancora nel monitor. |
 
