@@ -34,5 +34,34 @@ class BaseTests(unittest.TestCase):
             self.assertIn(f"`{version}`", text, name)
 
 
+class ApkWorkflowTests(unittest.TestCase):
+    """The manual APK build: it names the real module, application id and manifest, holds no signing key and prepares its draft in the right repository."""
+
+    def setUp(self) -> None:
+        self.text = (ROOT / ".github" / "workflows" / "apk-build.yml").read_text(encoding="utf-8")
+
+    def test_it_builds_the_app_module_and_names_the_application_id_of_the_gradle_file(self) -> None:
+        gradle = (ROOT / "app" / "build.gradle.kts").read_text(encoding="utf-8")
+        application_id = re.search(r'applicationId = "([^"]+)"', gradle)
+        self.assertIsNotNone(application_id)
+        self.assertIn(f"name='{application_id.group(1)}'", self.text)
+        self.assertIn(":app:assembleRelease", self.text)
+        self.assertIn("electro-hobby-3d.project.json", self.text)
+
+    def test_it_is_manual_with_a_dry_run_by_default_and_has_no_signing_key(self) -> None:
+        self.assertIn("workflow_dispatch:", self.text)
+        self.assertNotIn("pull_request", self.text)
+        self.assertRegex(self.text, r"(?s)dry_run:.*?default: true")
+        self.assertNotRegex(self.text, r"(?i)secrets\.")
+        self.assertNotIn("apksigner sign", self.text)
+
+    def test_every_action_is_pinned_to_a_commit_and_the_draft_job_names_its_repository(self) -> None:
+        for use in re.findall(r"(?m)^\s*uses:\s*(\S+)", self.text):
+            self.assertRegex(use, r"@[0-9a-f]{40}$", use)
+        draft = self.text.split("  draft:", 1)[1].split("  notify:", 1)[0]
+        self.assertIn("GH_REPO: ${{ github.repository }}", draft)
+        self.assertIn("environment: release", draft)
+
+
 if __name__ == "__main__":
     unittest.main()
