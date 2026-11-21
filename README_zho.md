@@ -12,14 +12,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-77-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**诚实性核对 - 今天真正能运行的内容：** 规则和 API 客户端已写好，并带有在 CI 的 JVM 上运行的单元测试；应用尚未构建成 APK，尚未在手机上显示过，也从未与真实的监控器通信。推送通知默认关闭，也没有连接任何推送服务。
+**预览版：未在真实手机上测试。** 规则和 API 客户端由在 CI 的 JVM 上运行的单元测试覆盖，发布的 APK 由 GitHub Actions 构建，但应用从未在手机上显示过，也从未与真实的监控器通信。推送通知默认关闭，也没有连接任何推送服务。
 
 ---
 
@@ -29,11 +29,11 @@
 
 | | |
 |---|---|
-| 版本 | `0.0.1` |
+| 版本 | `0.1.0` |
 | 成熟度 | 脚手架 |
-| 测试 | 77 |
+| 测试 | 80 |
 | 技术栈 | Kotlin、Jetpack Compose（Android 8.0+） |
-| 真实硬件 | 尚未在手机上运行 |
+| 真实硬件 | 未在真实手机上测试（预览版） |
 
 **跳转到：** [概述](#-概述) · [架构](#-架构) · [快速开始](#-快速开始) · [测试](#-测试) · [仓库结构](#-仓库结构) · [相关项目](#-相关项目)
 
@@ -112,11 +112,11 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 测试
 
-69 个单元测试在 JVM 上运行（`./gradlew testDebugUnitTest`），无需手机：针对模拟网络的 API 客户端、规则、链接、推送过滤和设置。8 个 Python 测试覆盖仓库和应用的轻量检查。CI 会运行全部测试；这里的任何内容都尚未在手机上运行过。
+69 个单元测试在 JVM 上运行（`./gradlew testDebugUnitTest`），无需手机：针对模拟网络的 API 客户端、规则、链接、推送过滤和设置。11 个 Python 测试覆盖仓库和应用的轻量检查。CI 会运行全部测试；这里的任何内容都尚未在手机上运行过。
 
 ## 🏗️ 构建与发布
 
-版本号保存在 `VERSION`、`electro-hobby-3d.project.json` 和 `app/build.gradle.kts` 中（不一致时构建会停止），每个版本在 [CHANGELOG.md](CHANGELOG.md) 中有一条记录。发布构建用 R8 压缩，之后用维护者自己的密钥签名，该密钥保存在仓库之外。目前尚未发布任何 APK。
+版本号保存在 `VERSION`、`electro-hobby-3d.project.json` 和 `app/build.gradle.kts` 中（不一致时构建会停止），每个版本在 [CHANGELOG.md](CHANGELOG.md) 中有一条记录。发布构建用 R8 压缩，之后用维护者自己的密钥签名，该密钥保存在仓库之外。第一个版本是预览版：尚未在真实手机上测试。APK 由 GitHub Actions 构建（工作流“APK build (manual)”，手动启动，其中没有签名密钥），维护者用自己的密钥签名，并连同 `SHA256SUMS` 作为预发布版本发布。**安装：** 从 Releases 页面的最新发布下载 `TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk`，用 `sha256sum -c SHA256SUMS` 校验，在手机设置中允许从该来源安装（Android 8.0 或更高版本）并打开文件，或运行 `adb install TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk`。**更新：** 在旧版本之上安装更新的 APK；由于签名相同且版本号更高，设置会保留，令牌仍封存在 Keystore 中。如果 Android 拒绝更新，说明签名不同：请先卸载旧应用（其令牌和设置会丢失）。
 
 ## 📂 仓库结构
 
@@ -163,7 +163,7 @@ MONITOR-ANDROID/
 
 **目前已知的限制**
 
-* 应用尚未构建成 APK，尚未在手机上运行，也尚未与真实监控器试用。
+* 预览版：应用尚未在手机上运行，也尚未与真实监控器试用。
 * 它调用的提案和设备路由目前尚未在监控器中。
 * 没有推送服务：需要只有维护者才能创建的 Google 项目和密钥。
 * 批准之前尚无生物识别确认。

@@ -12,14 +12,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-77-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**正直さの確認 - 今日実際に動くもの：** ルールと API クライアントは、CI の JVM 上で動くユニットテスト付きで書かれています。アプリはまだ APK としてビルドされておらず、スマートフォンで表示されたこともなく、実際のモニターと通信したこともありません。プッシュ通知は初期設定でオフで、プッシュサービスは接続されていません。
+**暫定版：実際のスマートフォンではテストしていません。** ルールと API クライアントは CI の JVM 上で動くユニットテストでカバーされ、リリースの APK は GitHub Actions がビルドしますが、アプリはスマートフォンで表示されたことがなく、実際のモニターと通信したこともありません。プッシュ通知は初期設定でオフで、プッシュサービスは接続されていません。
 
 ---
 
@@ -29,11 +29,11 @@
 
 | | |
 |---|---|
-| バージョン | `0.0.1` |
+| バージョン | `0.1.0` |
 | 成熟度 | 足場 |
-| テスト | 77 |
+| テスト | 80 |
 | 技術スタック | Kotlin、Jetpack Compose（Android 8.0 以上） |
-| 実機での動作 | スマートフォンではまだ実行していません |
+| 実機での動作 | 実際のスマートフォンでは未テスト（暫定版） |
 
 **移動先：** [概要](#-概要) · [アーキテクチャ](#-アーキテクチャ) · [クイックスタート](#-クイックスタート) · [テスト](#-テスト) · [リポジトリの構成](#-リポジトリの構成) · [関連プロジェクト](#-関連プロジェクト)
 
@@ -112,11 +112,11 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 テスト
 
-69 件のユニットテストが、スマートフォンなしで JVM 上で実行されます（`./gradlew testDebugUnitTest`）：模擬ネットワークに対する API クライアント、ルール、リンク、プッシュのゲート、設定。8 件の Python テストがリポジトリとアプリの軽量チェックをカバーします。CI がすべてを実行します。スマートフォンでの実行はまだありません。
+69 件のユニットテストが、スマートフォンなしで JVM 上で実行されます（`./gradlew testDebugUnitTest`）：模擬ネットワークに対する API クライアント、ルール、リンク、プッシュのゲート、設定。11 件の Python テストがリポジトリとアプリの軽量チェックをカバーします。CI がすべてを実行します。スマートフォンでの実行はまだありません。
 
 ## 🏗️ ビルドとリリース
 
-バージョンは `VERSION`、`electro-hobby-3d.project.json`、`app/build.gradle.kts` にあり（異なるとビルドが止まります）、各バージョンには [CHANGELOG.md](CHANGELOG.md) の項目があります。リリースビルドは R8 で縮小され、そのあとリポジトリの外に保管されたメンテナー自身の鍵で署名されます。APK はまだ公開されていません。
+バージョンは `VERSION`、`electro-hobby-3d.project.json`、`app/build.gradle.kts` にあり（異なるとビルドが止まります）、各バージョンには [CHANGELOG.md](CHANGELOG.md) の項目があります。リリースビルドは R8 で縮小され、そのあとリポジトリの外に保管されたメンテナー自身の鍵で署名されます。最初のリリースは暫定版で、実際のスマートフォンではテストしていません。APK は GitHub Actions がビルドし（ワークフロー「APK build (manual)」、手動で起動、署名鍵は含まれません）、メンテナーが自分の鍵で署名し、`SHA256SUMS` とともにプレリリースとして公開します。**インストール：** Releases ページの最新リリースから `TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk` をダウンロードし、`sha256sum -c SHA256SUMS` で確認し、スマートフォンの設定でその提供元からのインストールを許可して（Android 8.0 以上）ファイルを開くか、`adb install TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk` を実行します。**更新：** 新しい APK を古いものの上にインストールします。署名が同じでバージョンコードが大きいため設定は残り、トークンは Keystore で封印されたままです。Android が更新を拒否する場合は署名が異なるので、先に古いアプリを削除してください（トークンと設定は失われます）。
 
 ## 📂 リポジトリの構成
 
@@ -163,7 +163,7 @@ MONITOR-ANDROID/
 
 **現時点で分かっている制限**
 
-* アプリは APK にビルドされておらず、スマートフォンで実行されたことも、実際のモニターで試されたこともありません。
+* 暫定版：アプリはスマートフォンで実行されたことも、実際のモニターで試されたこともありません。
 * アプリが呼び出す提案とデバイスのルートは、まだモニターにありません。
 * プッシュサービスがありません。Google プロジェクトと、メンテナーだけが作れる鍵が必要です。
 * 承認の前の生体認証による確認はまだありません。
