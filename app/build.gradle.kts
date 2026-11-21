@@ -7,8 +7,8 @@ android {
         applicationId = "es.electrohobby3d.ghamonitor"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.0.1"
+        versionCode = 2
+        versionName = "0.1.0"
     }
     buildFeatures { compose = true; buildConfig = true }
     // The release is shrunk and obfuscated (R8). Signing is not done here: an APK is signed afterwards with the maintainer's own key, kept outside the repository.

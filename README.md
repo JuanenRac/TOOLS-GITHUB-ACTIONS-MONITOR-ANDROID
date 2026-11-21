@@ -12,14 +12,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-77-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Honesty check - what actually runs today:** the rules and the API client are written with unit tests that run on the JVM in CI; the app has not been built into an APK yet, has not been shown on a phone and has never talked to a real monitor. Push notifications are off by default and no push service is connected.
+**Preliminary: not tested on a real phone.** The rules and the API client are covered by unit tests that run on the JVM in CI and the release APK is built by GitHub Actions, but the app has not been shown on a phone and has never talked to a real monitor. Push notifications are off by default and no push service is connected.
 
 ---
 
@@ -29,11 +29,11 @@
 
 | | |
 |---|---|
-| Version | `0.0.1` |
+| Version | `0.1.0` |
 | Maturity | Scaffolding |
-| Tests | 77 |
+| Tests | 80 |
 | Stack | Kotlin, Jetpack Compose (Android 8.0+) |
-| On real hardware | Not run on a phone yet |
+| On real hardware | Not tested on a real phone (preliminary) |
 
 **Jump to:** [Overview](#-overview) · [Architecture](#-architecture) · [Quick start](#-quick-start) · [Testing](#-testing) · [Repository Structure](#-repository-structure) · [Related Projects](#-related-projects)
 
@@ -112,11 +112,11 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 Testing
 
-69 unit tests run on the JVM (`./gradlew testDebugUnitTest`) with no phone: the API client against a fake network, the rules, the links, the push gate and the settings. 8 Python tests cover the repository and the light checks of the app. The CI runs all of them; nothing here has been run on a phone.
+69 unit tests run on the JVM (`./gradlew testDebugUnitTest`) with no phone: the API client against a fake network, the rules, the links, the push gate and the settings. 11 Python tests cover the repository and the light checks of the app. The CI runs all of them; nothing here has been run on a phone.
 
 ## 🏗️ Build & Release
 
-The version lives in `VERSION`, in `electro-hobby-3d.project.json` and in `app/build.gradle.kts` (the build stops when they differ), and each version has its entry in [CHANGELOG.md](CHANGELOG.md). The release build is shrunk with R8 and is signed afterwards with the maintainer's own key, kept outside the repository. No APK is published yet.
+The version lives in `VERSION`, in `electro-hobby-3d.project.json` and in `app/build.gradle.kts` (the build stops when they differ), and each version has its entry in [CHANGELOG.md](CHANGELOG.md). The release build is shrunk with R8 and is signed afterwards with the maintainer's own key, kept outside the repository. The first release is preliminary: it has not been tested on a real phone. GitHub Actions builds the APK (the workflow "APK build (manual)", started by hand, with no signing key in it) and the maintainer signs it with their own key and publishes it as a pre-release together with `SHA256SUMS`. **To install:** download `TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk` from the latest release on the Releases page, check it with `sha256sum -c SHA256SUMS`, allow installing from that source in the settings of the phone (Android 8.0 or later) and open the file, or run `adb install TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk`. **To update:** install the newer APK over the old one; the settings stay because the signature is the same and the version code is higher, and the token stays sealed in the Keystore. If Android refuses the update, the signature is not the same: remove the old app first (its token and settings are lost).
 
 ## 📂 Repository Structure
 
@@ -163,7 +163,7 @@ MONITOR-ANDROID/
 
 **Known limits today**
 
-* The app has not been built into an APK, run on a phone or tried against a real monitor.
+* Preliminary release: the app has not been run on a phone or tried against a real monitor.
 * The proposal and device routes it calls are not in the monitor yet.
 * There is no push service: it needs a Google project and a key that only the maintainer can create.
 * No biometric confirmation before an approval yet.

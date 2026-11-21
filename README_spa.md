@@ -12,14 +12,14 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-77-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Comprobación de honestidad - lo que se ejecuta hoy:** las reglas y el cliente de la API están escritos con pruebas unitarias que se ejecutan en la JVM en el CI; la app aún no se ha compilado a un APK, no se ha visto en un móvil y nunca ha hablado con un monitor real. Las notificaciones push están desactivadas por defecto y no hay ningún servicio push conectado.
+**Preliminar: no probada en un teléfono real.** Las reglas y el cliente de la API están cubiertos por pruebas unitarias que se ejecutan en la JVM en el CI y el APK de la versión lo compila GitHub Actions, pero la app no se ha visto en un móvil y nunca ha hablado con un monitor real. Las notificaciones push están desactivadas por defecto y no hay ningún servicio push conectado.
 
 ---
 
@@ -29,11 +29,11 @@
 
 | | |
 |---|---|
-| Versión | `0.0.1` |
+| Versión | `0.1.0` |
 | Madurez | Andamiaje |
-| Pruebas | 77 |
+| Pruebas | 80 |
 | Pila tecnológica | Kotlin, Jetpack Compose (Android 8.0+) |
-| En hardware real | Aún no se ha ejecutado en un móvil |
+| En hardware real | No probada en un teléfono real (preliminar) |
 
 **Ir a:** [Resumen](#-resumen) · [Arquitectura](#-arquitectura) · [Inicio rápido](#-inicio-rápido) · [Pruebas](#-pruebas) · [Estructura del repositorio](#-estructura-del-repositorio) · [Proyectos relacionados](#-proyectos-relacionados)
 
@@ -112,11 +112,11 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 Pruebas
 
-69 pruebas unitarias se ejecutan en la JVM (`./gradlew testDebugUnitTest`) sin móvil: el cliente de la API contra una red simulada, las reglas, los enlaces, el filtro push y los ajustes. 8 pruebas de Python cubren el repositorio y las comprobaciones ligeras de la app. El CI las ejecuta todas; nada de aquí se ha ejecutado en un móvil.
+69 pruebas unitarias se ejecutan en la JVM (`./gradlew testDebugUnitTest`) sin móvil: el cliente de la API contra una red simulada, las reglas, los enlaces, el filtro push y los ajustes. 11 pruebas de Python cubren el repositorio y las comprobaciones ligeras de la app. El CI las ejecuta todas; nada de aquí se ha ejecutado en un móvil.
 
 ## 🏗️ Compilación y publicación
 
-La versión vive en `VERSION`, en `electro-hobby-3d.project.json` y en `app/build.gradle.kts` (la compilación se detiene si difieren), y cada versión tiene su entrada en [CHANGELOG.md](CHANGELOG.md). La compilación de publicación se reduce con R8 y se firma después con la clave propia del mantenedor, guardada fuera del repositorio. Aún no se publica ningún APK.
+La versión vive en `VERSION`, en `electro-hobby-3d.project.json` y en `app/build.gradle.kts` (la compilación se detiene si difieren), y cada versión tiene su entrada en [CHANGELOG.md](CHANGELOG.md). La compilación de publicación se reduce con R8 y se firma después con la clave propia del mantenedor, guardada fuera del repositorio. La primera versión es preliminar: no se ha probado en un teléfono real. GitHub Actions compila el APK (el workflow "APK build (manual)", lanzado a mano y sin clave de firma) y el mantenedor lo firma con su propia clave y lo publica como versión preliminar junto con `SHA256SUMS`. **Para instalar:** descarga `TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk` de la última versión en la página de Releases, compruébalo con `sha256sum -c SHA256SUMS`, permite instalar desde esa fuente en los ajustes del teléfono (Android 8.0 o posterior) y abre el archivo, o ejecuta `adb install TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID-release.apk`. **Para actualizar:** instala el APK más nuevo sobre el anterior; los ajustes se conservan porque la firma es la misma y el código de versión es mayor, y el token sigue sellado en el Keystore. Si Android rechaza la actualización, la firma no es la misma: quita antes la app antigua (se pierden su token y sus ajustes).
 
 ## 📂 Estructura del repositorio
 
@@ -163,7 +163,7 @@ MONITOR-ANDROID/
 
 **Límites conocidos hoy**
 
-* La app no se ha compilado a un APK, ni ejecutado en un móvil, ni probado con un monitor real.
+* Versión preliminar: la app no se ha ejecutado en un móvil ni probado con un monitor real.
 * Las rutas de propuestas y dispositivos que llama aún no están en el monitor.
 * No hay servicio push: necesita un proyecto de Google y una clave que solo puede crear el mantenedor.
 * Aún no hay confirmación biométrica antes de aprobar.
