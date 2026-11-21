@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A manual workflow builds the release APK:** `apk-build.yml` is started by hand (a dry run by default), compiles the release build twice from a commit that is already in main, compares the two results, checks that the APK carries the version of the manifest, that it has the expected application id and that it is unsigned, and uploads it with `SHA256SUMS`, a build manifest and a provenance attestation. No signing key exists in the workflow: the APK is signed afterwards on the maintainer's machine. With the dry run off, a draft pre-release waits for the approval of the owner.
+
 - **The dashboard notifier reads the repository, ref and commit from environment variables:** the workflow no longer expands them inside the shell script, so the step has nothing to inject into and passes the workflow security scan.
 
 - **The Android app of GitHub Actions Monitor:** a Kotlin and Jetpack Compose project (Gradle wrapper, Android 8.0 and later) with five screens: summary, alerts, repositories, proposals and settings.
