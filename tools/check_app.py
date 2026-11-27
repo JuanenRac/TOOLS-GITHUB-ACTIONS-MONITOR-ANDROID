@@ -8,7 +8,7 @@
 
   strings      the eight language folders (en, es, de, fr, it, ja, zh, pt) hold exactly the same keys, with the same %n$s placeholders, and every string is well-formed XML
   resources    every R.string.<name> the Kotlin code uses exists, and every string is used somewhere
-  config       app/src/main/assets/app_config.json has every endpoint the code calls, under /api/v1/, and the push defaults are the conservative ones (off, critical only)
+  config       app/src/main/assets/app_config.json has every endpoint the code calls, under /api/, and the push defaults are the conservative ones (off, critical only)
   secrets      no Firebase config, keystore or key file is in the tree, and no file under app/ carries a token-looking value
   manifest     the version in the manifest, in VERSION and in app/build.gradle.kts is the same
 
@@ -25,10 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RES = ROOT / "app" / "src" / "main" / "res"
 KOTLIN = ROOT / "app" / "src" / "main" / "java"
 LANG_FOLDERS = ("values", "values-es", "values-de", "values-fr", "values-it", "values-ja", "values-zh", "values-pt")
-REQUIRED_ENDPOINTS = (
-    "health", "status", "accounts", "account_status", "alerts", "repo_health",
-    "proposals", "proposal", "proposal_approve", "proposal_reject", "devices", "device",
-)
+REQUIRED_ENDPOINTS = ("auth_me", "login", "logout", "health", "accounts", "alerts", "team_health", "proposals")
 PLACEHOLDER = re.compile(r"%(\d+)\$[sd]")
 FORBIDDEN_NAMES = ("google-services.json", "GoogleService-Info.plist")
 FORBIDDEN_SUFFIXES = (".jks", ".keystore", ".p12", ".pem", ".key")
@@ -92,8 +89,8 @@ def check_config(problems: list[str]) -> None:
     endpoints = config.get("endpoints", {})
     for name in REQUIRED_ENDPOINTS:
         value = endpoints.get(name)
-        if not isinstance(value, str) or not value.startswith("/api/v1/"):
-            problems.append(f"config: endpoint {name} is missing or not under /api/v1/")
+        if not isinstance(value, str) or not value.startswith("/api/"):
+            problems.append(f"config: endpoint {name} is missing or not under /api/")
     push = config.get("push", {})
     if push.get("enabled_by_default") is not False:
         problems.append("config: push.enabled_by_default must be false")

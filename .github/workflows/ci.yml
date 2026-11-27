@@ -67,7 +67,7 @@ jobs:
       - name: Unit tests and lint
         run: ./gradlew testDebugUnitTest lintDebug --no-daemon
       - name: The number of tests that ran is the one the README states
-        run: python -I tools/check_app.py --junit app/build/test-results/testDebugUnitTest 69
+        run: python -I tools/check_app.py --junit app/build/test-results/testDebugUnitTest 64
       - name: Keep the reports of the tests and of lint
         if: ${{ always() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -79,12 +79,54 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  # The client against the monitor itself: demo monitors (invented data) are started from the monitor commit pinned below, the recorded answers the tests use are
+  # checked against what they answer now, and the client with its real network code talks to them.
+  contract:
+    name: The client against demo monitors
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR
+          ref: 3d47eabe43bd51592ea84bcfcc0b47b376e499b3 # the monitor the app is checked against (2.2.0)
+          path: monitor-checkout
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Make the Gradle wrapper executable
+        run: chmod +x gradlew
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - name: Start the demo monitors
+        run: bash tools/contract/start.sh "$GITHUB_WORKSPACE/monitor-checkout" "$RUNNER_TEMP/monitor-logs"
+      - name: The recorded answers still have the shape the monitor gives
+        run: python3 tools/contract/record.py --check app/src/test/resources/contract --host 127.0.0.1
+      - name: The client against the running monitors
+        env:
+          LIVE_MONITOR: "1"
+        run: ./gradlew testDebugUnitTest --tests '*LiveMonitorTest' --no-daemon
+      - name: None of those tests was skipped
+        run: |
+          grep -h '<testsuite ' app/build/test-results/testDebugUnitTest/*LiveMonitorTest.xml | tee suite.txt
+          grep -q 'tests="5" skipped="0" failures="0" errors="0"' suite.txt
+      - name: Logs of the monitors
+        if: ${{ failure() }}
+        run: tail -n 80 "$RUNNER_TEMP"/monitor-logs/*.log
+
   # The one check to require in the rules of the branch. It always runs, fails when a job failed or was cancelled and accepts a job that was
   # skipped on purpose (the changelog check on a push, an expensive job whose paths did not change), so it never waits for a job that did not start.
   ci-gate:
     name: CI gate
     if: ${{ always() }}
-    needs: [validate, changelog, android]
+    needs: [validate, changelog, android, contract]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

@@ -1,0 +1,164 @@
+{
+ "request": "GET /api/alerts",
+ "status": 200,
+ "body": {
+  "schema": 1,
+  "account": null,
+  "alerts": [
+   {
+    "id": "collab.issue.critical:demo-gamma-api:31",
+    "code": "collab.issue.critical",
+    "level": "error",
+    "sentinel": "collab",
+    "account_id": "",
+    "repo": "demo-gamma-api",
+    "title": "Critical issue (security): demo-gamma-api #31 Token printed in a log",
+    "details": {
+     "url": "https://github.com/demo-owner/demo-gamma-api/issues/31",
+     "number": 31
+    },
+    "created_at": "2026-11-25T18:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   },
+   {
+    "id": "ci.red:demo-alpha-app:demo-alpha-a",
+    "code": "ci.red",
+    "level": "error",
+    "sentinel": "ci",
+    "account_id": "",
+    "repo": "demo-alpha-app",
+    "title": "demo-alpha-app: Release build is red on main",
+    "details": {
+     "url": "#"
+    },
+    "created_at": "2026-11-26T16:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   },
+   {
+    "id": "posture.branch.unprotected:demo-gamma-api",
+    "code": "posture.branch.unprotected",
+    "level": "error",
+    "sentinel": "security",
+    "account_id": "",
+    "repo": "demo-gamma-api",
+    "title": "The default branch has no protection.",
+    "details": {
+     "items": [
+      "main"
+     ],
+     "count": 1
+    },
+    "created_at": "2026-11-27T22:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   },
+   {
+    "id": "posture.org.no_two_factor:org",
+    "code": "posture.org.no_two_factor",
+    "level": "error",
+    "sentinel": "security",
+    "account_id": "",
+    "repo": null,
+    "title": "The organization does not require two-factor sign-in.",
+    "details": {
+     "items": [],
+     "count": 1
+    },
+    "created_at": "2026-11-27T22:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   },
+   {
+    "id": "collab.pr.conflict:demo-beta-docs:5",
+    "code": "collab.pr.conflict",
+    "level": "warning",
+    "sentinel": "collab",
+    "account_id": "",
+    "repo": "demo-beta-docs",
+    "title": "Pull request with conflicts for 9 days: demo-beta-docs #5 New guide",
+    "details": {
+     "url": "https://github.com/demo-owner/demo-beta-docs/issues/5",
+     "number": 5
+    },
+    "created_at": "2026-11-18T18:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   },
+   {
+    "id": "collab.pr.review_pending:demo-alpha-core:8",
+    "code": "collab.pr.review_pending",
+    "level": "warning",
+    "sentinel": "collab",
+    "account_id": "",
+    "repo": "demo-alpha-core",
+    "title": "Review waiting for 4 days: demo-alpha-core #8 Faster cache",
+    "details": {
+     "url": "https://github.com/demo-owner/demo-alpha-core/issues/8",
+     "number": 8
+    },
+    "created_at": "2026-11-23T22:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   },
+   {
+    "id": "ci.pending_sign:demo-beta-fw:demo-beta-fw",
+    "code": "ci.pending_sign",
+    "level": "warning",
+    "sentinel": "ci",
+    "account_id": "",
+    "repo": "demo-beta-fw",
+    "title": "demo-beta-fw: a build waits for its signature (31 h)",
+    "details": {
+     "url": "#"
+    },
+    "created_at": "2026-11-26T15:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   },
+   {
+    "id": "actions.dismissal_not_authorized:demo-alpha-app:dependency:7",
+    "code": "actions.dismissal_not_authorized",
+    "level": "warning",
+    "sentinel": "ci",
+    "account_id": "",
+    "repo": "demo-alpha-app",
+    "title": "demo-alpha-app: a security alert was dismissed by demo-user, who is not on the list",
+    "details": {
+     "url": "#",
+     "reason": "tolerable_risk",
+     "who": "demo-user"
+    },
+    "created_at": "2026-11-27T22:37:10Z",
+    "muted_until": null,
+    "muted_by": ""
+   }
+  ],
+  "summary": {
+   "total": 13,
+   "muted": 0,
+   "by_sentinel": {
+    "security": 6,
+    "ci": 3,
+    "collab": 4
+   },
+   "by_level": {
+    "error": 4,
+    "warning": 7,
+    "info": 2
+   }
+  },
+  "mutes": [],
+  "history": [],
+  "mute_hours": 24,
+  "sentinels": [
+   "ci",
+   "collab",
+   "security",
+   "delivery",
+   "supply",
+   "system"
+  ]
+ }
+}

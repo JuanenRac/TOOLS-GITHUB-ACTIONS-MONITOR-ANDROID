@@ -1,0 +1,53 @@
+# =============================================================================
+# TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID - record the answers of a demo monitor
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D)
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+# Starts the demo monitors (invented data only) from the monitor commit pinned below and records their answers to the calls of the app. The artifact
+# "contract-answers" is what goes into app/src/test/resources/contract. By hand or on a branch named contract-run/<anything>; never on main or on a pull request.
+
+name: Record the monitor answers
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "contract-run/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: record-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  record:
+    name: Record against the demo monitors
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR
+          ref: 3d47eabe43bd51592ea84bcfcc0b47b376e499b3 # the monitor the app is checked against (2.2.0)
+          path: monitor-checkout
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Start the demo monitors
+        run: bash tools/contract/start.sh "$GITHUB_WORKSPACE/monitor-checkout" "$RUNNER_TEMP/monitor-logs"
+      - name: Record
+        run: python3 tools/contract/record.py "$RUNNER_TEMP/contract-answers"
+      - name: Logs of the monitors
+        if: ${{ failure() }}
+        run: tail -n 80 "$RUNNER_TEMP"/monitor-logs/*.log
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: contract-answers
+          path: ${{ runner.temp }}/contract-answers
+          retention-days: 3

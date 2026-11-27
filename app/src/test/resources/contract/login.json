@@ -1,0 +1,12 @@
+{
+ "request": "POST /api/auth/login",
+ "status": 200,
+ "body": {
+  "ok": true,
+  "user": "demo-admin",
+  "role": "admin",
+  "csrf": "example",
+  "expires": 1795862231.298525,
+  "token": "msn_example-session-of-the-demo-000000"
+ }
+}

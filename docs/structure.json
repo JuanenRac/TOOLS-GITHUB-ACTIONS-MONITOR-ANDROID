@@ -49,14 +49,14 @@
         {
           "name": "src/main/assets/app_config.json",
           "desc": {
-            "en": "paths, timeouts, page size, push defaults",
-            "es": "rutas, tiempos, página, valores de push",
-            "de": "Pfade, Zeitlimits, Seitengröße, Push-Vorgaben",
-            "fr": "chemins, délais, page, valeurs push",
-            "it": "percorsi, timeout, pagina, valori push",
-            "ja": "パス、タイムアウト、ページサイズ、プッシュ初期値",
-            "zh": "路径、超时、页面大小、推送默认值",
-            "pt": "caminhos, tempos limite, página, valores de push"
+            "en": "paths, timeouts, size limit, push rule",
+            "es": "rutas, tiempos, tamaño máximo, regla push",
+            "de": "Pfade, Zeitlimits, Größenlimit, Push-Regel",
+            "fr": "chemins, délais, taille maximale, règle push",
+            "it": "percorsi, timeout, limite, regola push",
+            "ja": "パス、タイムアウト、サイズ上限、プッシュ規則",
+            "zh": "路径、超时、大小上限、推送规则",
+            "pt": "caminhos, tempos limite, tamanho, regra push"
           },
           "tree_name": "src/main/assets/app_config.json"
         },
@@ -91,14 +91,14 @@
         {
           "name": "src/main/java/es/electrohobby3d/ghamonitor/",
           "desc": {
-            "en": "screens, view model, Keystore, push",
-            "es": "pantallas, view model, Keystore, push",
-            "de": "Bildschirme, View-Model, Keystore, Push",
-            "fr": "écrans, view model, Keystore, push",
-            "it": "schermate, view model, Keystore, push",
-            "ja": "画面、ViewModel、Keystore、プッシュ",
-            "zh": "界面、视图模型、Keystore、推送",
-            "pt": "ecrãs, view model, Keystore, push"
+            "en": "screens, view model, theme, Keystore",
+            "es": "pantallas, view model, tema, Keystore",
+            "de": "Bildschirme, View-Model, Theme, Keystore",
+            "fr": "écrans, view model, thème, Keystore",
+            "it": "schermate, view model, tema, Keystore",
+            "ja": "画面、ViewModel、テーマ、Keystore",
+            "zh": "界面、视图模型、主题、Keystore",
+            "pt": "ecrãs, view model, tema, Keystore"
           },
           "tree_name": "src/main/java/es/electrohobby3d/ghamonitor/"
         },
@@ -115,6 +115,34 @@
             "pt": "os testes unitários na JVM"
           },
           "tree_name": "src/test/java/es/electrohobby3d/ghamonitor/core/"
+        },
+        {
+          "name": "src/test/resources/contract/",
+          "desc": {
+            "en": "answers recorded from a demo monitor",
+            "es": "respuestas grabadas de un monitor de demo",
+            "de": "aufgezeichnete Antworten eines Demo-Monitors",
+            "fr": "réponses enregistrées d'un moniteur de démo",
+            "it": "risposte registrate da un monitor demo",
+            "ja": "デモモニターから記録した応答",
+            "zh": "从演示监视器录制的响应",
+            "pt": "respostas gravadas de um monitor de demo"
+          },
+          "tree_name": "src/test/resources/contract/"
+        },
+        {
+          "name": "src/androidTest/",
+          "desc": {
+            "en": "the screenshots in an emulator",
+            "es": "las capturas en un emulador",
+            "de": "die Bildschirmfotos im Emulator",
+            "fr": "les captures dans un émulateur",
+            "it": "le immagini in un emulatore",
+            "ja": "エミュレーターでのスクリーンショット",
+            "zh": "模拟器中的截图",
+            "pt": "as capturas num emulador"
+          },
+          "tree_name": "src/androidTest/"
         }
       ]
     },
@@ -174,6 +202,20 @@
             "pt": "desenham as duas imagens do README"
           },
           "tree_name": "make_architecture.py make_structure.py"
+        },
+        {
+          "name": "contract/",
+          "desc": {
+            "en": "demo monitors and recording of answers",
+            "es": "monitores de demo y grabación de respuestas",
+            "de": "Demo-Monitore und Aufzeichnung der Antworten",
+            "fr": "moniteurs de démo et enregistrement",
+            "it": "monitor demo e registrazione risposte",
+            "ja": "デモモニターと応答の記録",
+            "zh": "演示监视器与响应录制",
+            "pt": "monitores de demo e gravação"
+          },
+          "tree_name": "contract/"
         }
       ]
     },

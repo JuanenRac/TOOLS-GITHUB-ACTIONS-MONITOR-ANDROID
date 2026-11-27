@@ -1,147 +1,133 @@
+// TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID - what the client sends and what it makes of an answer that is not the promised one (the real shapes are in ContractTest).
+// Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 package es.electrohobby3d.ghamonitor.core
 
+import java.io.ByteArrayInputStream
+import java.io.IOException
+import org.json.JSONObject
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 
 class MonitorApiTest {
     private val config = Assets.config()
-    private fun api(transport: Transport, token: String = "tok-1234567890") = MonitorApi("https://monitor.example", token, transport, config)
+    private val health = """{"ok":true,"version":"2.2.0","lite":false,"loaded":true,"offline":false}"""
 
-    @Test fun everyRequestCarriesTheBearerTokenAndTheVersion() {
-        val transport = FakeTransport.ok("""{"ok":true,"edition":"complete","version":"1.9.0"}""")
-        val health = api(transport).health()
-        assertTrue(health.ok)
-        assertEquals("1.9.0", health.version)
+    private fun api(transport: FakeTransport, session: String = "") = MonitorApi("https://gha.example", "the-access-token", session, transport, config)
+
+    private fun failure(block: () -> Any?): ApiException {
+        try {
+            block()
+        } catch (e: ApiException) {
+            return e
+        }
+        fail("no failure")
+        throw IllegalStateException()
+    }
+
+    @Test fun theAccessTokenTravelsInItsOwnHeader() {
+        val transport = FakeTransport.ok(health)
+        api(transport).health()
         val sent = transport.requests.single()
-        assertEquals("GET", sent.method)
-        assertEquals("https://monitor.example/api/v1/health", sent.url)
-        assertEquals("Bearer tok-1234567890", sent.headers["Authorization"])
-        assertEquals("1", sent.headers["X-API-Version"])
-        assertEquals("mobile", sent.headers["X-Client-Profile"])
+        assertEquals("the-access-token", sent.headers["X-Monitor-Access"])
+        assertNull(sent.headers["Authorization"])
+        assertEquals("https://gha.example/api/health", sent.url)
     }
 
-    @Test fun alertsAreReadAsPagesWithTheNextCursor() {
-        val body = """{"items":[{"id":"a1","code":"ci.red","level":"critical","repo":"o/r","created_at":"1700000000"},{"id":"a2","code":"ci.slow","level":"warning","repo":"o/s","title":null}],"next_cursor":"abc.def","limit":30}"""
-        val page = api(FakeTransport.ok(body)).alerts()
-        assertEquals(listOf("a1", "a2"), page.items.map { it.id })
-        assertEquals("abc.def", page.nextCursor)
-        assertEquals("", page.items[1].title)           // JSON null is an empty text, not the word "null"
-        assertEquals("", page.items[0].sentinel)        // the compact profile leaves fields out
+    @Test fun theSessionOfAPersonGoesAsABearerBesideIt() {
+        val transport = FakeTransport.ok(health)
+        api(transport, session = "msn_session").health()
+        val sent = transport.requests.single()
+        assertEquals("the-access-token", sent.headers["X-Monitor-Access"])
+        assertEquals("Bearer msn_session", sent.headers["Authorization"])
     }
 
-    @Test fun theCursorAndFiltersGoInTheQueryAndAreEncoded() {
-        val transport = FakeTransport.ok("""{"items":[],"next_cursor":null,"limit":30}""")
-        val page = api(transport).alerts(cursor = "a b/c.d", level = "critical")
-        assertNull(page.nextCursor)
-        val url = transport.requests.single().url
-        assertTrue(url, url.startsWith("https://monitor.example/api/v1/alerts?limit=30&cursor=a+b%2Fc.d&level=critical"))
-        assertFalse(url.contains("account="))
-    }
-
-    @Test fun aBareArrayIsReadToo() {
-        val page = api(FakeTransport.ok("""[{"id":"x","label":"Main"}]""")).accounts()
-        assertEquals("Main", page.single().label)
-    }
-
-    @Test fun theErrorEnvelopeGivesAStableKey() {
-        val transport = FakeTransport.status(400, """{"error":"bad_request","code":"api.bad_cursor","message":"x"}""")
-        val e = assertThrows(ApiException::class.java) { api(transport).alerts(cursor = "zzz") }
-        assertEquals(ErrorKey.BAD_CURSOR, e.key)
-        assertEquals(400, e.status)
-    }
-
-    @Test fun aStatusWithoutAnEnvelopeStillGivesAKey() {
-        assertEquals(ErrorKey.UNAUTHORIZED, assertThrows(ApiException::class.java) { api(FakeTransport.status(401, "<html>")).status() }.key)
-        assertEquals(ErrorKey.FORBIDDEN, assertThrows(ApiException::class.java) { api(FakeTransport.status(403, "")).status() }.key)
-        assertEquals(ErrorKey.NOT_FOUND, assertThrows(ApiException::class.java) { api(FakeTransport.status(404, "")).status() }.key)
-        assertEquals(ErrorKey.RATE_LIMITED, assertThrows(ApiException::class.java) { api(FakeTransport.status(429, "")).status() }.key)
-        assertEquals(ErrorKey.SERVER_ERROR, assertThrows(ApiException::class.java) { api(FakeTransport.status(503, "")).status() }.key)
-        assertEquals(ErrorKey.UNKNOWN, assertThrows(ApiException::class.java) { api(FakeTransport.status(418, "")).status() }.key)
-    }
-
-    @Test fun everyCodeOfTheMonitorHasItsOwnKey() {
-        val codes = listOf(
-            "api.bad_request", "api.unauthorized", "api.forbidden", "api.not_found", "api.bad_cursor", "api.bad_limit", "api.unknown_field",
-            "api.version_unsupported", "api.server_error", "act.not_allowed", "act.hash_mismatch", "act.expired", "act.exec_disabled", "act.bad_state",
-        )
-        for (code in codes) assertTrue(code, ErrorKey.forCode(code) != ErrorKey.UNKNOWN)
-        assertEquals(codes.size, codes.map { ErrorKey.forCode(it) }.toSet().size)
-    }
-
-    @Test fun aNetworkFailureNeverCarriesTheAddress() {
-        val e = assertThrows(ApiException::class.java) { api(FakeTransport.down()).health() }
-        assertEquals(ErrorKey.NETWORK, e.key)
-        assertFalse(e.message.orEmpty().contains("192.168"))
-    }
-
-    @Test fun theTokenIsNeverInAnErrorText() {
-        val e = assertThrows(ApiException::class.java) { api(FakeTransport.status(401, ""), token = "secret-token-value").status() }
-        assertFalse(e.toString().contains("secret-token-value"))
-    }
-
-    @Test fun anUnreadableBodyIsOneKindOfFailure() {
-        assertEquals(ErrorKey.BAD_RESPONSE, assertThrows(ApiException::class.java) { api(FakeTransport.ok("not json")).health() }.key)
-        assertEquals(ErrorKey.BAD_RESPONSE, assertThrows(ApiException::class.java) { api(FakeTransport.ok("{broken")).alerts() }.key)
-    }
-
-    @Test fun approvingSendsTheHashThePersonWasShown() {
-        val hash = "b".repeat(64)
-        val transport = FakeTransport.ok(
-            """{"id":"p000001","account_id":"main","repo":"o/r","action_type":"rerun","state":"approved","content_hash":"$hash","approved_by":"ana","created_at":1,"expires_at":2}""",
-        )
-        val result = api(transport).approve("p000001", hash)
-        assertEquals("approved", result.state)
+    @Test fun signingInAsksForATokenForAnApp() {
+        val transport = FakeTransport.ok("""{"ok":true,"user":"ana","role":"viewer","token":"msn_abc"}""")
+        assertEquals(Session("msn_abc", "ana", "viewer"), api(transport).login("ana", "p"))
         val sent = transport.requests.single()
         assertEquals("POST", sent.method)
-        assertEquals("https://monitor.example/api/v1/actions/proposals/p000001/approve", sent.url)
         assertEquals("application/json", sent.headers["Content-Type"])
-        assertTrue(sent.body!!.contains("\"expected_hash\":\"$hash\""))
+        val body = JSONObject(sent.body!!)
+        assertEquals("ana", body.getString("username"))
+        assertEquals("api", body.getString("client"))
+        assertFalse(sent.url.contains("ana"))
     }
 
-    @Test fun rejectingCutsTheNoteAndSendsNoHash() {
-        val transport = FakeTransport.ok("""{"id":"p1x","state":"rejected"}""")
-        api(transport).reject("p1x", "n".repeat(500))
-        val body = transport.requests.single().body!!
-        assertFalse(body.contains("expected_hash"))
-        assertTrue(body.length < 260)
+    @Test fun theFiltersGoInTheQueryAndAreEncoded() {
+        val transport = FakeTransport.ok("""{"alerts":[],"summary":{"total":0,"muted":0,"by_level":{}}}""")
+        api(transport).alerts(level = "error", muted = "hide")
+        assertEquals("https://gha.example/api/alerts?level=error&muted=hide", transport.requests.single().url)
+        assertEquals("?q=a+b%26c", MonitorApi.queryString(listOf("q" to "a b&c", "empty" to "", "none" to null)))
     }
 
-    @Test fun anIdThatIsNotAPlainWordNeverReachesTheNetwork() {
-        val transport = FakeTransport.ok("{}")
-        val e = assertThrows(ApiException::class.java) { api(transport).approve("../x", "h") }
-        assertEquals(ErrorKey.BAD_REQUEST, e.key)
-        assertTrue(transport.requests.isEmpty())
+    @Test fun anAnswerWithoutItsListIsAnErrorAndNeverAnEmptyScreen() {
+        for (body in listOf("""{"items":[]}""", """[]""", "not json", "")) {
+            assertEquals(body, ErrorKey.BAD_RESPONSE, failure { api(FakeTransport.ok(body)).alerts() }.key)
+            assertEquals(body, ErrorKey.BAD_RESPONSE, failure { api(FakeTransport.ok(body)).teamHealth() }.key)
+            assertEquals(body, ErrorKey.BAD_RESPONSE, failure { api(FakeTransport.ok(body)).proposals() }.key)
+        }
     }
 
-    @Test fun registeringADeviceGivesTheId() {
-        val transport = FakeTransport.ok("""{"id":"abc123def456"}""")
-        assertEquals("abc123def456", api(transport).registerDevice("t".repeat(30), "android"))
-        val sent = transport.requests.single()
-        assertEquals("https://monitor.example/api/v1/devices", sent.url)
-        assertTrue(sent.body!!.contains("\"platform\":\"android\""))
+    @Test fun aRefusalWithoutAReadableBodyIsToldByItsStatus() {
+        val cases = mapOf(400 to ErrorKey.BAD_REQUEST, 401 to ErrorKey.UNAUTHORIZED, 403 to ErrorKey.FORBIDDEN, 404 to ErrorKey.NOT_FOUND, 429 to ErrorKey.RATE_LIMITED,
+            503 to ErrorKey.SERVER_ERROR, 302 to ErrorKey.UNKNOWN)
+        for ((status, key) in cases) assertEquals("$status", key, failure { api(FakeTransport.status(status, "<html>")).health() }.key)
     }
 
-    @Test fun anAnswerWithoutADeviceIdIsRefused() {
-        val e = assertThrows(ApiException::class.java) { api(FakeTransport.ok("{}")).registerDevice("t".repeat(30), "android") }
-        assertEquals(ErrorKey.BAD_RESPONSE, e.key)
+    @Test fun aLockOutIsToldApart() {
+        assertEquals(ErrorKey.LOCKED, failure { api(FakeTransport.status(429, """{"error":"locked"}""")).health() }.key)
+        assertEquals(ErrorKey.LOCKED, failure { api(FakeTransport.status(429, """{"ok":false,"error":"x","code":"locked"}""")).login("a", "b") }.key)
     }
 
-    @Test fun unregisteringUsesDelete() {
-        val transport = FakeTransport.status(204, "")
-        api(transport).unregisterDevice("abc123def456")
-        val sent = transport.requests.single()
-        assertEquals("DELETE", sent.method)
-        assertEquals("https://monitor.example/api/v1/devices/abc123def456", sent.url)
-        assertNull(sent.body)
+    @Test fun noAnswerIsANetworkErrorThatNamesNothing() {
+        val error = failure { api(FakeTransport.down()).health() }
+        assertEquals(ErrorKey.NETWORK, error.key)
+        assertFalse(error.message!!.contains("192.168"))
+        assertFalse(error.message!!.contains("the-access-token"))
     }
 
-    @Test fun theRepoHealthPathNamesOwnerAndRepo() {
-        val transport = FakeTransport.ok("""{"repo":"acme/web","level":"warning"}""")
-        assertEquals("warning", api(transport).repoHealth("acme", "web").level)
-        assertEquals("https://monitor.example/api/v1/repos/acme/web/health", transport.requests.single().url)
+    @Test fun aSummaryStopsAfterARefusedTokenAndDoesNotHammerTheMonitor() {
+        val transport = FakeTransport.status(401, """{"error":"access"}""")
+        val summary = loadSummary(api(transport), 0)
+        assertEquals(ErrorKey.UNAUTHORIZED, summary.error)
+        assertEquals(1, transport.requests.size)
+    }
+
+    @Test fun eachPartOfTheSummaryFailsByItself() {
+        val transport = FakeTransport { sent ->
+            when {
+                sent.url.endsWith("/api/health") -> HttpResult(200, health)
+                sent.url.contains("/api/team/health") -> HttpResult(500, "")
+                sent.url.contains("/api/alerts") -> HttpResult(200, """{"alerts":[],"summary":{"total":0,"muted":0,"by_level":{}}}""")
+                else -> HttpResult(404, "")
+            }
+        }
+        val summary = loadSummary(api(transport), 0)
+        assertEquals(ErrorKey.SERVER_ERROR, summary.error)
+        assertTrue(summary.health != null && summary.alerts != null)
+        assertNull(summary.team)
+    }
+
+    @Test fun theLiteEditionIsNotAskedForWhatItLacks() {
+        val transport = FakeTransport.ok("""{"ok":true,"version":"2.2.0","lite":true}""")
+        val summary = loadSummary(api(transport), 0)
+        assertTrue(summary.health!!.lite)
+        assertNull(summary.error)
+        assertEquals(1, transport.requests.size)
+    }
+
+    @Test fun anAnswerOverTheLimitIsRefused() {
+        assertArrayEquals(byteArrayOf(1, 2, 3), HttpUrlTransport.readLimited(ByteArrayInputStream(byteArrayOf(1, 2, 3)), 3))
+        try {
+            HttpUrlTransport.readLimited(ByteArrayInputStream(ByteArray(20_000)), 10_000)
+            fail("no limit")
+        } catch (e: IOException) {
+            assertEquals("answer too large", e.message)
+        }
     }
 }

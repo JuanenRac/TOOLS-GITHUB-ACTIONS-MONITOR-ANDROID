@@ -1,0 +1,10 @@
+{
+ "request": "GET /api/auth/me",
+ "status": 200,
+ "body": {
+  "enabled": true,
+  "mode": "team",
+  "authenticated": false,
+  "bootstrap": false
+ }
+}

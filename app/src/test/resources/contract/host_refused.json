@@ -1,0 +1,7 @@
+{
+ "request": "GET /api/alerts",
+ "status": 403,
+ "body": {
+  "error": "forbidden"
+ }
+}

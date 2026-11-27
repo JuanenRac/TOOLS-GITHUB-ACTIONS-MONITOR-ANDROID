@@ -1,7 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Critical alerts, only when the person turns the push switch on (off by default). -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,7 +14,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- ghamon://proposal/<id>?hash=<hex>: opens one proposal. The link only names it; a person still confirms on the screen. -->
+            <!-- ghamon://proposal/<id>?hash=<hex>: opens one proposal. The link only names it; nothing is decided on the phone. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -1,0 +1,9 @@
+{
+ "request": "POST /api/auth/login",
+ "status": 403,
+ "body": {
+  "ok": false,
+  "error": "tokens for scripts are turned off",
+  "code": "bearer_off"
+ }
+}

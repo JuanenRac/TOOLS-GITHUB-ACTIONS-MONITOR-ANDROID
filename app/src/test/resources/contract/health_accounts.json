@@ -1,0 +1,35 @@
+{
+ "request": "GET /api/health",
+ "status": 200,
+ "body": {
+  "ok": true,
+  "lite": false,
+  "version": "2.2.0",
+  "uptime_seconds": 2,
+  "loaded": true,
+  "offline": false,
+  "degraded": 0,
+  "code_stale": false,
+  "cycle": {
+   "phase": "idle",
+   "running_seconds": 0,
+   "seconds_since_ok": null,
+   "stuck": false,
+   "dead": true,
+   "blocked": false,
+   "abandoned_calls": 0
+  },
+  "credential": {
+   "state": "ok",
+   "reason": "",
+   "since": null,
+   "seconds": 0,
+   "replaced_at": null,
+   "source": null
+  },
+  "supervisor": true,
+  "accounts": 3,
+  "default": "personal",
+  "listening": "this_computer"
+ }
+}

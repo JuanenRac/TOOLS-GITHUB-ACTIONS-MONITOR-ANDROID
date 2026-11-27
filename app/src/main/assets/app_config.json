@@ -1,26 +1,18 @@
 {
   "api": {
-    "version": "1",
-    "profile": "mobile",
     "connect_timeout_ms": 8000,
     "read_timeout_ms": 15000,
-    "max_response_bytes": 2000000,
-    "page_size": 30,
-    "max_pages_in_memory": 10
+    "max_response_bytes": 4000000
   },
   "endpoints": {
-    "health": "/api/v1/health",
-    "status": "/api/v1/status",
-    "accounts": "/api/v1/accounts",
-    "account_status": "/api/v1/accounts/{id}/status",
-    "alerts": "/api/v1/alerts",
-    "repo_health": "/api/v1/repos/{owner}/{repo}/health",
-    "proposals": "/api/v1/actions/proposals",
-    "proposal": "/api/v1/actions/proposals/{id}",
-    "proposal_approve": "/api/v1/actions/proposals/{id}/approve",
-    "proposal_reject": "/api/v1/actions/proposals/{id}/reject",
-    "devices": "/api/v1/devices",
-    "device": "/api/v1/devices/{id}"
+    "auth_me": "/api/auth/me",
+    "login": "/api/auth/login",
+    "logout": "/api/auth/logout",
+    "health": "/api/health",
+    "accounts": "/api/accounts",
+    "alerts": "/api/alerts",
+    "team_health": "/api/team/health",
+    "proposals": "/api/ai/actions"
   },
   "push": {
     "enabled_by_default": false,
@@ -28,10 +20,6 @@
     "max_title_chars": 100,
     "remember_alert_ids": 100,
     "channel_id": "critical_alerts"
-  },
-  "proposals": {
-    "default_state_filter": "pending",
-    "four_eyes_hint": true
   },
   "deep_link": {
     "scheme": "ghamon",

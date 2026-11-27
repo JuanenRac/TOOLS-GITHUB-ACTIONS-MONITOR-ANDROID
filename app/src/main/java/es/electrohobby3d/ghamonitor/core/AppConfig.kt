@@ -8,15 +8,7 @@ import org.json.JSONObject
 /** The file is damaged or lacks something the app cannot work without. */
 class ConfigException(message: String) : Exception(message)
 
-data class ApiConfig(
-    val version: String,
-    val profile: String,
-    val connectTimeoutMs: Int,
-    val readTimeoutMs: Int,
-    val maxResponseBytes: Int,
-    val pageSize: Int,
-    val maxPagesInMemory: Int,
-)
+data class ApiConfig(val connectTimeoutMs: Int, val readTimeoutMs: Int, val maxResponseBytes: Int)
 
 data class PushConfig(
     val enabledByDefault: Boolean,
@@ -26,36 +18,22 @@ data class PushConfig(
     val channelId: String,
 )
 
-data class ProposalsConfig(val defaultStateFilter: String, val fourEyesHint: Boolean)
-
 data class DeepLinkConfig(val scheme: String, val host: String)
 
 data class AppConfig(
     val api: ApiConfig,
     val endpoints: Map<String, String>,
     val push: PushConfig,
-    val proposals: ProposalsConfig,
     val deepLink: DeepLinkConfig,
 ) {
-    /** The path of an endpoint with its `{name}` placeholders filled; a value is checked so it cannot add a segment or a query. */
-    fun path(name: String, vararg values: Pair<String, String>): String {
-        var path = endpoints[name] ?: throw ConfigException("no endpoint named $name")
-        for ((key, value) in values) {
-            if (!SEGMENT.matches(value)) throw ConfigException("bad value for $key")
-            path = path.replace("{$key}", value)
-        }
-        if ('{' in path) throw ConfigException("a placeholder of $name was not filled")
-        return path
-    }
+    /** The path of an endpoint of the monitor. */
+    fun path(name: String): String = endpoints[name] ?: throw ConfigException("no endpoint named $name")
 
     companion object {
         /** Names every endpoint the app calls: a file without one is refused when it is read, not when the screen opens. */
-        val REQUIRED_ENDPOINTS = listOf(
-            "health", "status", "accounts", "account_status", "alerts", "repo_health",
-            "proposals", "proposal", "proposal_approve", "proposal_reject", "devices", "device",
-        )
+        val REQUIRED_ENDPOINTS = listOf("auth_me", "login", "logout", "health", "accounts", "alerts", "team_health", "proposals")
         private val SEGMENT = Regex("^[A-Za-z0-9_.-]{1,100}\$")
-        private val PATH = Regex("^/api/v1/[A-Za-z0-9_./{}-]{1,150}\$")
+        private val PATH = Regex("^/api/[A-Za-z0-9_/-]{1,150}\$")
 
         fun parse(text: String): AppConfig {
             try {
@@ -63,24 +41,19 @@ data class AppConfig(
                 val api = root.getJSONObject("api")
                 val endpoints = root.getJSONObject("endpoints")
                 val push = root.getJSONObject("push")
-                val proposals = root.getJSONObject("proposals")
                 val link = root.getJSONObject("deep_link")
                 val map = LinkedHashMap<String, String>()
                 for (name in REQUIRED_ENDPOINTS) {
                     val value = endpoints.getString(name)
-                    if (!PATH.matches(value)) throw ConfigException("endpoint $name is not a path of the API v1")
+                    if (!PATH.matches(value)) throw ConfigException("endpoint $name is not a path of the API of the monitor")
                     map[name] = value
                 }
                 val level = Level.parse(push.getString("only_level")) ?: throw ConfigException("push.only_level is not a level")
                 return AppConfig(
                     api = ApiConfig(
-                        version = api.getString("version"),
-                        profile = api.getString("profile"),
                         connectTimeoutMs = ranged(api.getInt("connect_timeout_ms"), 500, 120_000, "connect_timeout_ms"),
                         readTimeoutMs = ranged(api.getInt("read_timeout_ms"), 500, 300_000, "read_timeout_ms"),
                         maxResponseBytes = ranged(api.getInt("max_response_bytes"), 10_000, 50_000_000, "max_response_bytes"),
-                        pageSize = ranged(api.getInt("page_size"), 1, 200, "page_size"),
-                        maxPagesInMemory = ranged(api.getInt("max_pages_in_memory"), 1, 100, "max_pages_in_memory"),
                     ),
                     endpoints = map,
                     push = PushConfig(
@@ -90,7 +63,6 @@ data class AppConfig(
                         rememberAlertIds = ranged(push.getInt("remember_alert_ids"), 10, 5000, "remember_alert_ids"),
                         channelId = push.getString("channel_id").also { if (!SEGMENT.matches(it)) throw ConfigException("bad channel id") },
                     ),
-                    proposals = ProposalsConfig(proposals.getString("default_state_filter"), proposals.getBoolean("four_eyes_hint")),
                     deepLink = DeepLinkConfig(link.getString("scheme"), link.getString("host")),
                 )
             } catch (e: JSONException) {

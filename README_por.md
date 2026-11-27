@@ -6,32 +6,32 @@
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | 🇵🇹 <b>Português</b></p>
 
-### Cliente Android nativo do GitHub Actions Monitor: resumo, alertas, repositórios e propostas no telemóvel, com notificações push apenas críticas e desativadas por predefinição.
+### Cliente Android nativo do GitHub Actions Monitor: resumo, alertas, repositórios e as propostas da sua IA no telemóvel, apenas em leitura.
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-75-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Preliminar: não testada num telemóvel real.** As regras e o cliente da API estão cobertos por testes unitários que correm na JVM no CI e o APK da versão é compilado pelo GitHub Actions, mas a aplicação nunca foi mostrada num telemóvel e nunca falou com um monitor real. As notificações push estão desativadas por predefinição e não há nenhum serviço push ligado.
+**Preliminar: não testada num telemóvel real.** O cliente é verificado contra monitores de demonstração (dados inventados) no GitHub Actions e os ecrãs são fotografados num emulador, mas a aplicação nunca foi vista num telemóvel nem falou com um monitor em uso diário. Não envia notificações push: o monitor ainda não tem serviço push.
 
 ---
 
-> **Estado de segurança (safety) e de segurança informática:** esta aplicação lê um monitor e pode aprovar ou rejeitar propostas de ação que podem repetir workflows ou comentar no GitHub. Uma aprovação fica ligada ao conteúdo exato mostrado, tem de a aprovar outra pessoa (o monitor impõe-no) e uma ligação nunca aprova nada por si só. Não é um sistema de segurança (safety) de nenhuma máquina.
+> **Estado de segurança (safety) e de segurança informática:** esta aplicação lê um monitor; além de iniciar e terminar sessão não altera nada, e as propostas só são aprovadas ou rejeitadas no computador do monitor. Não é um sistema de segurança (safety) de nenhuma máquina.
 
 ## 📋 Num relance
 
 | | |
 |---|---|
-| Versão | `0.1.0` |
+| Versão | `0.1.1` |
 | Maturidade | Estrutura inicial |
-| Testes | 80 |
+| Testes | 75 |
 | Tecnologias | Kotlin, Jetpack Compose (Android 8.0+) |
 | Em hardware real | Não testada num telemóvel real (preliminar) |
 
@@ -46,17 +46,17 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Verificações do repositório | 🟡 | A verificação do repositório, a das imagens, as verificações leves da aplicação (oito idiomas, recursos, segredos) e os respetivos testes correm no CI. |
-| Regras e cliente da API | 🟠 | Estão escritos 69 testes unitários na JVM (aprovação, ligações, filtro push, definições, o cliente contra uma rede simulada); a CI executa-os com o Gradle e verifica quantos correram. |
-| Ecrãs e Keystore | 🔴 | Escritos e compilados na CI, mas nunca mostrados num ecrã e nunca executados num telemóvel. |
-| Notificações push | 🟠 | Apenas críticas e desativadas por predefinição; a parte do Firebase é uma implementação nula até existir um projeto Google. |
-| Rotas do monitor | 🟠 | As rotas de leitura seguem o contrato da API v1 do monitor; as rotas de propostas e dispositivos que a aplicação chama ainda não estão no monitor. |
+| Regras e cliente do monitor | 🟡 | Estão escritos 64 testes unitários na JVM, entre eles o cliente contra respostas gravadas de um monitor de demonstração; a CI executa-os com o Gradle, verifica quantos correram e corre o cliente contra monitores de demonstração em execução. |
+| Ecrãs e Keystore | 🟠 | Fotografados num emulador contra um monitor de demonstração; nunca executados num telemóvel. |
+| Notificações push | 🔴 | O monitor não tem serviço push: a aplicação não oferece interruptor nem pede permissão. |
+| Rotas do monitor | 🟡 | Verificadas contra o monitor de demonstração do commit fixado em `.github/workflows/ci.yml`; não contra um monitor em uso diário. |
 
 ## 🎯 Visão geral
 
-* **O monitor no bolso:** o resumo, os alertas, os repositórios e as propostas de um GitHub Actions Monitor, lidos com um token bearer através da sua API v1.
-* **Decisões a quatro olhos:** aprove ou rejeite uma proposta depois de ver o seu conteúdo exato; a aprovação fica ligada ao hash desse conteúdo e o monitor recusa-a se a mesma pessoa criou a proposta.
-* **Silenciosa por predefinição:** as notificações push estão desativadas, são apenas críticas, uma vez por alerta, com um título curto e mais nada.
-* **Nada secreto no repositório:** o token é cifrado com uma chave do Keystore do Android; aqui não há nenhum ficheiro do Firebase, chave ou keystore.
+* **O monitor no bolso:** o resumo, os alertas, os repositórios e as propostas de um GitHub Actions Monitor em modo de rede.
+* **Identifica-se como o monitor pede:** o token de acesso do modo de rede e, se o monitor tiver utilizadores, a sessão de uma pessoa.
+* **Apenas leitura:** as propostas mostram o comando exato e o seu hash; a aprovação faz-se no computador do monitor.
+* **Nada secreto no repositório:** os tokens são selados com uma chave do Keystore do Android; aqui não há ficheiros Firebase, chaves nem keystores.
 
 ## 🧩 Papel no EH3D
 
@@ -72,30 +72,35 @@ Como as partes deste repositório se encaixam: quem o usa, o que contém e de qu
 
 ## ✨ Funcionalidades
 
-* Cinco ecrãs: resumo, alertas (filtro por nível, paginação com cursores), repositórios (os que têm alertas e uma pesquisa de qualquer repositório), propostas (pendentes ou todas, com detalhe) e definições.
-* Aprovar ou rejeitar uma proposta depois de uma confirmação que indica o hash do conteúdo; se indicar o seu nome nas definições, não lhe é oferecida a aprovação de uma proposta que criou.
-* As ligações `ghamon://proposal/<id>?hash=<hex>` abrem uma proposta; se o seu conteúdo mudou desde que a ligação foi criada, a aprovação não é oferecida.
-* Registo do dispositivo para notificações push apenas críticas, desativadas por predefinição.
-* Oito idiomas que seguem o idioma do telemóvel: inglês, espanhol, alemão, francês, italiano, japonês, chinês e português de Portugal.
+* Cinco ecrãs: resumo, alertas (filtro por nível), repositórios (ordenados por risco, pesquisa por nome), propostas (pendentes ou todas, com detalhe) e definições.
+* Iniciar e terminar sessão quando o monitor trabalha em modo de equipa; cada recusa do monitor tem a sua própria mensagem.
+* As ligações `ghamon://proposal/<id>?hash=<hex>` abrem uma proposta e avisam se o conteúdo mudou desde que a ligação foi criada.
+* Oito idiomas que seguem o idioma do telemóvel: inglês, espanhol, alemão, francês, italiano, japonês, chinês e português europeu.
+
+As imagens mostram a aplicação num emulador, contra um monitor de demonstração com dados inventados:
+
+<table><tr><td align="center"><img src="images/screenshots/sign-in.png" alt="Início de sessão" width="180"><br>Início de sessão</td><td align="center"><img src="images/screenshots/summary.png" alt="Resumo" width="180"><br>Resumo</td><td align="center"><img src="images/screenshots/alerts.png" alt="Alertas" width="180"><br>Alertas</td><td align="center"><img src="images/screenshots/repos.png" alt="Repositórios" width="180"><br>Repositórios</td><td align="center"><img src="images/screenshots/proposals.png" alt="Propostas" width="180"><br>Propostas</td></tr></table>
 
 ## 🔒 Segurança e proteção
 
-* O token é cifrado com AES-GCM sob uma chave que vive no Keystore do Android, nunca é escrito num registo nem num texto de erro e só é enviado para o endereço escrito; os redirecionamentos nunca são seguidos.
-* O `http://` sem cifra só é aceite para localhost, nomes `.local` e endereços IPv4 privados; qualquer outro anfitrião exige `https://`, verificado apenas contra as autoridades do sistema.
-* Uma aprovação leva o hash do conteúdo que estava no ecrã; uma ligação só abre uma proposta e nunca aprova nem executa nada.
-* As notificações push estão desativadas por predefinição, são apenas críticas e levam um título curto e limpo: sem registos nem segredos de repositórios.
-* Os dados da aplicação ficam fora das cópias de segurança, e `python -I tools/check_app.py` falha se houver um ficheiro do Firebase, um keystore ou uma chave na árvore.
+* O token de acesso e a sessão são selados com AES-GCM sob uma chave que vive no Keystore do Android, nunca são escritos num registo nem num texto de erro e só são enviados para o endereço escrito; ao mudar o endereço são eliminados, e os redirecionamentos nunca são seguidos.
+* A palavra-passe é enviada uma vez para iniciar sessão e não é guardada.
+* `http://` sem cifra só é aceite para localhost, nomes `.local` e endereços IPv4 privados; qualquer outro anfitrião precisa de `https://`, verificado apenas com as autoridades do sistema.
+* Uma ligação apenas abre uma proposta; nada é aprovado nem executado a partir do telemóvel.
+* Os dados da aplicação ficam fora das cópias de segurança, e `python -I tools/check_app.py` falha se houver um ficheiro Firebase, um keystore ou uma chave na árvore.
 
 ## 🔌 Interfaces
 
-* Leituras do monitor: `GET /api/v1/health`, `/status`, `/accounts`, `/accounts/{id}/status`, `/alerts` (paginação por cursor, filtros) e `/repos/{owner}/{repo}/health`, com `Authorization: Bearer` e `X-API-Version: 1`.
-* Propostas (rotas que a aplicação presume, todas no ficheiro de configuração): `GET /api/v1/actions/proposals`, `GET .../{id}`, `POST .../{id}/approve` com `expected_hash` e `POST .../{id}/reject`.
-* Dispositivos: `POST /api/v1/devices` e `DELETE /api/v1/devices/{id}`.
-* Ligação: `ghamon://proposal/<id>?hash=<64 carateres hexadecimais>`.
+* Leituras: `GET /api/auth/me`, `/api/health`, `/api/alerts`, `/api/team/health`, `/api/ai/actions` e `/api/accounts` (apenas com várias contas).
+* Iniciar e terminar sessão: `POST /api/auth/login` (`client: "api"`) e `POST /api/auth/logout`.
+* Cabeçalhos: `X-Monitor-Access` com o token de acesso e, em modo de equipa, `Authorization: Bearer` com a sessão.
+* Ligação: `ghamon://proposal/<id>?hash=<64 caracteres hexadecimais>`.
 
 ## ⚙️ Configuração
 
-Todo o valor ajustável está em `app/src/main/assets/app_config.json`: os caminhos, os tempos limite, o tamanho da página, os valores de push e o esquema da ligação. O endereço do monitor, o seu token e o seu nome escrevem-se nas definições da aplicação e ficam guardados no telemóvel. Nada ajustável está no código.
+Todos os valores ajustáveis estão em `app/src/main/assets/app_config.json`: os caminhos, os tempos limite, o limite de tamanho, a regra de push e o esquema da ligação. O endereço do monitor, o token de acesso e o utilizador são escritos nas definições da aplicação e ficam no telemóvel.
+
+O monitor precisa de `listen.network` ligado; um nome (não um endereço) usado para lá chegar vai para `listen.allowed_hosts`; defina o token de acesso em `MONITOR_ACCESS_TOKEN` para não mudar em cada arranque; com utilizadores (modo de equipa) ligue também `auth.allow_bearer`.
 
 ## 🚀 Início rápido
 
@@ -112,7 +117,7 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 Testes
 
-69 testes unitários correm na JVM (`./gradlew testDebugUnitTest`) sem telemóvel: o cliente da API contra uma rede simulada, as regras, as ligações, o filtro push e as definições. 11 testes de Python cobrem o repositório e as verificações leves da aplicação. O CI executa-os todos; nada aqui foi executado num telemóvel.
+64 testes unitários correm na JVM (`./gradlew testDebugUnitTest`) sem telemóvel: o cliente contra respostas gravadas de um monitor de demonstração, as suas recusas, as ligações, as definições e a regra de push. Cinco deles falam com monitores de demonstração em execução e são ignorados se o trabalho de CI "contract" não os arrancar. 11 testes em Python cobrem o repositório e as verificações leves da aplicação. Nada aqui correu num telemóvel.
 
 ## 🏗️ Compilação e publicação
 
@@ -132,15 +137,18 @@ MONITOR-ANDROID/
 ├── app/
 │   ├── build.gradle.kts proguard-rules.pro                a compilação e as regras de redução
 │   ├── src/main/AndroidManifest.xml                       permissões, atividade, ligação ghamon://
-│   ├── src/main/assets/app_config.json                    caminhos, tempos limite, página, valores de push
+│   ├── src/main/assets/app_config.json                    caminhos, tempos limite, tamanho, regra push
 │   ├── src/main/res/                                      os textos em oito idiomas, ícones e temas
 │   ├── src/main/java/es/electrohobby3d/ghamonitor/core/   regras testadas na JVM
-│   ├── src/main/java/es/electrohobby3d/ghamonitor/        ecrãs, view model, Keystore, push
-│   └── src/test/java/es/electrohobby3d/ghamonitor/core/   os testes unitários na JVM
+│   ├── src/main/java/es/electrohobby3d/ghamonitor/        ecrãs, view model, tema, Keystore
+│   ├── src/test/java/es/electrohobby3d/ghamonitor/core/   os testes unitários na JVM
+│   ├── src/test/resources/contract/                       respostas gravadas de um monitor de demo
+│   └── src/androidTest/                                   as capturas num emulador
 ├── tools/
 │   ├── ci_validate.py                                     manifesto, versões, paridade dos README
 │   ├── check_app.py                                       idiomas, recursos, configuração e segredos da aplicação
-│   └── make_architecture.py make_structure.py             desenham as duas imagens do README
+│   ├── make_architecture.py make_structure.py             desenham as duas imagens do README
+│   └── contract/                                          monitores de demo e gravação
 ├── docs/                                                  as fontes das duas imagens
 ├── gradle/                                                os ficheiros do wrapper do Gradle
 ├── gradlew                                                o wrapper do Gradle
@@ -163,14 +171,14 @@ MONITOR-ANDROID/
 
 **Limites conhecidos hoje**
 
-* Versão preliminar: a aplicação não foi executada num telemóvel nem experimentada com um monitor real.
-* As rotas de propostas e dispositivos que chama ainda não estão no monitor.
-* Não há serviço push: precisa de um projeto Google e de uma chave que só o mantenedor pode criar.
-* Ainda não há confirmação biométrica antes de uma aprovação.
+* Versão preliminar: a aplicação não correu num telemóvel.
+* A edição Lite do monitor não tem alertas, repositórios nem propostas; a aplicação só o pode dizer.
+* Não há serviço push: o monitor ainda não envia mensagens push.
+* O emparelhamento com o código QR do monitor não é suportado; o token de acesso é escrito.
 
 **A seguir**
 
-* Executar o primeiro CI e corrigir o que encontrar, ligar as rotas do monitor e depois acrescentar o serviço push do Firebase quando o projeto Google existir.
+* Experimentar num telemóvel contra um monitor real, depois o emparelhamento por QR, e push quando o monitor o oferecer.
 
 ## 🌍 Idiomas
 

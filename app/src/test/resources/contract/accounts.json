@@ -1,0 +1,89 @@
+{
+ "request": "GET /api/accounts",
+ "status": 200,
+ "body": {
+  "accounts": [
+   {
+    "id": "client-labs",
+    "state": "stuck",
+    "port": 18800,
+    "restarts": 0,
+    "error": "",
+    "credential": {
+     "state": "ok",
+     "reason": "",
+     "since": null
+    },
+    "version": "2.2.0",
+    "loaded": true,
+    "owner": "",
+    "repos": 6,
+    "running": 3,
+    "failing": 3,
+    "fail24": 0,
+    "ok24": 0,
+    "done24": 0,
+    "rate": {
+     "remaining": 4630,
+     "limit": 5000,
+     "reset": "2026-11-27T23:17:10Z"
+    }
+   },
+   {
+    "id": "org-acme",
+    "state": "stuck",
+    "port": 18801,
+    "restarts": 0,
+    "error": "",
+    "credential": {
+     "state": "ok",
+     "reason": "",
+     "since": null
+    },
+    "version": "2.2.0",
+    "loaded": true,
+    "owner": "",
+    "repos": 6,
+    "running": 3,
+    "failing": 3,
+    "fail24": 0,
+    "ok24": 0,
+    "done24": 0,
+    "rate": {
+     "remaining": 4630,
+     "limit": 5000,
+     "reset": "2026-11-27T23:17:10Z"
+    }
+   },
+   {
+    "id": "personal",
+    "state": "stuck",
+    "port": 18802,
+    "restarts": 0,
+    "error": "",
+    "credential": {
+     "state": "ok",
+     "reason": "",
+     "since": null
+    },
+    "version": "2.2.0",
+    "loaded": true,
+    "owner": "",
+    "repos": 6,
+    "running": 3,
+    "failing": 3,
+    "fail24": 0,
+    "ok24": 0,
+    "done24": 0,
+    "rate": {
+     "remaining": 4630,
+     "limit": 5000,
+     "reset": "2026-11-27T23:17:10Z"
+    }
+   }
+  ],
+  "default": "personal",
+  "layout": "accounts",
+  "listening": "this_computer"
+ }
+}
