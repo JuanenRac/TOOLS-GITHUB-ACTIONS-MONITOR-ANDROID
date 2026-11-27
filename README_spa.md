@@ -6,32 +6,32 @@
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | 🇪🇸 <b>Español</b> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
-### Cliente Android nativo de GitHub Actions Monitor: resumen, alertas, repositorios y propuestas en el móvil, con notificaciones push solo críticas desactivadas por defecto.
+### Cliente Android nativo de GitHub Actions Monitor: resumen, alertas, repositorios y las propuestas de su IA en el móvil, en solo lectura.
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-75-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Preliminar: no probada en un teléfono real.** Las reglas y el cliente de la API están cubiertos por pruebas unitarias que se ejecutan en la JVM en el CI y el APK de la versión lo compila GitHub Actions, pero la app no se ha visto en un móvil y nunca ha hablado con un monitor real. Las notificaciones push están desactivadas por defecto y no hay ningún servicio push conectado.
+**Preliminar: no probada en un teléfono real.** El cliente se comprueba contra monitores de demostración (datos inventados) en GitHub Actions y las pantallas se fotografían en un emulador, pero la app no se ha visto en un móvil ni ha hablado con un monitor de uso diario. No envía notificaciones push: el monitor aún no tiene servicio push.
 
 ---
 
-> **Estado de seguridad (safety) y de seguridad informática:** esta app lee un monitor y puede aprobar o rechazar propuestas de acción que pueden repetir workflows o comentar en GitHub. Una aprobación queda ligada al contenido exacto mostrado, debe aprobarla otra persona (lo impone el monitor) y un enlace nunca aprueba nada por sí solo. No es un sistema de seguridad (safety) de ninguna máquina.
+> **Estado de seguridad (safety) y de seguridad informática:** esta app lee un monitor; salvo iniciar y cerrar sesión no cambia nada, y las propuestas se aprueban o rechazan solo en el ordenador del monitor. No es un sistema de seguridad (safety) de ninguna máquina.
 
 ## 📋 De un vistazo
 
 | | |
 |---|---|
-| Versión | `0.1.0` |
+| Versión | `0.1.1` |
 | Madurez | Andamiaje |
-| Pruebas | 80 |
+| Pruebas | 75 |
 | Pila tecnológica | Kotlin, Jetpack Compose (Android 8.0+) |
 | En hardware real | No probada en un teléfono real (preliminar) |
 
@@ -46,17 +46,17 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Comprobaciones del repositorio | 🟡 | La comprobación del repositorio, la de las imágenes, las comprobaciones ligeras de la app (ocho idiomas, recursos, secretos) y sus pruebas se ejecutan en el CI. |
-| Reglas y cliente de la API | 🟠 | Hay 69 pruebas unitarias en la JVM escritas (aprobación, enlaces, filtro push, ajustes, el cliente contra una red simulada); la CI las ejecuta con Gradle y comprueba cuántas se han ejecutado. |
-| Pantallas y Keystore | 🔴 | Escritas y compiladas en CI, pero nunca mostradas en una pantalla y nunca ejecutadas en un móvil. |
-| Notificaciones push | 🟠 | Solo críticas y desactivadas por defecto; la parte de Firebase es una implementación nula hasta que exista un proyecto de Google. |
-| Rutas del monitor | 🟠 | Las rutas de lectura siguen el contrato de la API v1 del monitor; las rutas de propuestas y dispositivos que llama la app aún no están en el monitor. |
+| Reglas y cliente del monitor | 🟡 | Hay 64 pruebas unitarias en la JVM, entre ellas el cliente contra respuestas grabadas de un monitor de demostración; la CI las ejecuta con Gradle, comprueba cuántas se ejecutan y lanza el cliente contra monitores de demostración en marcha. |
+| Pantallas y Keystore | 🟠 | Fotografiadas en un emulador contra un monitor de demostración; nunca ejecutadas en un móvil. |
+| Notificaciones push | 🔴 | El monitor no tiene servicio push, así que la app no ofrece interruptor ni pide permiso. |
+| Rutas del monitor | 🟡 | Comprobadas contra el monitor de demostración del commit fijado en `.github/workflows/ci.yml`; no contra un monitor de uso diario. |
 
 ## 🎯 Resumen
 
-* **El monitor en el bolsillo:** el resumen, las alertas, los repositorios y las propuestas de un GitHub Actions Monitor, leídos con un token bearer sobre su API v1.
-* **Decisiones a cuatro ojos:** aprueba o rechaza una propuesta tras ver su contenido exacto; la aprobación queda ligada al hash de ese contenido y el monitor la rechaza si la misma persona creó la propuesta.
-* **Silenciosa por defecto:** las notificaciones push están desactivadas, son solo críticas, una vez por alerta, con un título corto y nada más.
-* **Nada secreto en el repositorio:** el token se cifra con una clave del Keystore de Android; aquí no hay ningún archivo de Firebase, clave ni keystore.
+* **El monitor en el bolsillo:** el resumen, las alertas, los repositorios y las propuestas de un GitHub Actions Monitor en modo red.
+* **Se identifica como el monitor lo pide:** el token de acceso del modo red y, si el monitor tiene usuarios, la sesión de una persona.
+* **Solo lectura:** las propuestas muestran el comando exacto y su hash; aprobar se hace en el ordenador del monitor.
+* **Nada secreto en el repositorio:** los tokens se cifran con una clave del Keystore de Android; aquí no hay ningún archivo de Firebase, clave ni keystore.
 
 ## 🧩 Papel en EH3D
 
@@ -72,30 +72,35 @@ Cómo encajan las partes de este repositorio: quién lo usa, qué contiene y de 
 
 ## ✨ Funciones
 
-* Cinco pantallas: resumen, alertas (filtro por nivel, paginación con cursores), repositorios (los que tienen alertas y una búsqueda de cualquier repositorio), propuestas (pendientes o todas, con detalle) y ajustes.
-* Aprobar o rechazar una propuesta tras una confirmación que nombra el hash del contenido; si indicas tu nombre en los ajustes, no se te ofrece aprobar una propuesta que creaste tú.
-* Los enlaces `ghamon://proposal/<id>?hash=<hex>` abren una propuesta; si su contenido cambió desde que se hizo el enlace, no se ofrece aprobar.
-* Registro del dispositivo para notificaciones push solo críticas, desactivadas por defecto.
+* Cinco pantallas: resumen, alertas (filtro por nivel), repositorios (ordenados por riesgo, búsqueda por nombre), propuestas (pendientes o todas, con detalle) y ajustes.
+* Iniciar y cerrar sesión cuando el monitor trabaja en modo equipo; cada rechazo del monitor tiene su propio mensaje.
+* Los enlaces `ghamon://proposal/<id>?hash=<hex>` abren una propuesta y avisan si su contenido cambió desde que se hizo el enlace.
 * Ocho idiomas que siguen el idioma del móvil: inglés, español, alemán, francés, italiano, japonés, chino y portugués de Portugal.
+
+Las capturas son de la app en un emulador, contra un monitor de demostración con datos inventados:
+
+<table><tr><td align="center"><img src="images/screenshots/sign-in.png" alt="Inicio de sesión" width="180"><br>Inicio de sesión</td><td align="center"><img src="images/screenshots/summary.png" alt="Resumen" width="180"><br>Resumen</td><td align="center"><img src="images/screenshots/alerts.png" alt="Alertas" width="180"><br>Alertas</td><td align="center"><img src="images/screenshots/repos.png" alt="Repositorios" width="180"><br>Repositorios</td><td align="center"><img src="images/screenshots/proposals.png" alt="Propuestas" width="180"><br>Propuestas</td></tr></table>
 
 ## 🔒 Seguridad y protección
 
-* El token se cifra con AES-GCM bajo una clave que vive en el Keystore de Android, nunca se escribe en un registro ni en un texto de error y solo se envía a la dirección escrita; nunca se siguen redirecciones.
+* El token de acceso y la sesión se cifran con AES-GCM bajo una clave que vive en el Keystore de Android, nunca se escriben en un registro ni en un texto de error y solo se envían a la dirección escrita; al cambiar la dirección se borran, y nunca se siguen redirecciones.
+* La contraseña se envía una vez para iniciar sesión y no se guarda.
 * `http://` sin cifrar solo se acepta para localhost, nombres `.local` y direcciones IPv4 privadas; cualquier otro host necesita `https://`, comprobado solo contra las autoridades del sistema.
-* Una aprobación lleva el hash del contenido que había en pantalla; un enlace solo abre una propuesta y nunca aprueba ni ejecuta nada.
-* Las notificaciones push están desactivadas por defecto, son solo críticas y llevan un título corto y limpio: sin registros ni secretos de repositorios.
+* Un enlace solo abre una propuesta; desde el móvil no se aprueba ni se ejecuta nada.
 * Los datos de la app quedan fuera de las copias de seguridad, y `python -I tools/check_app.py` falla si hay un archivo de Firebase, un keystore o una clave en el árbol.
 
 ## 🔌 Interfaces
 
-* Lecturas del monitor: `GET /api/v1/health`, `/status`, `/accounts`, `/accounts/{id}/status`, `/alerts` (paginación por cursor, filtros) y `/repos/{owner}/{repo}/health`, con `Authorization: Bearer` y `X-API-Version: 1`.
-* Propuestas (rutas que la app supone, todas en el archivo de configuración): `GET /api/v1/actions/proposals`, `GET .../{id}`, `POST .../{id}/approve` con `expected_hash` y `POST .../{id}/reject`.
-* Dispositivos: `POST /api/v1/devices` y `DELETE /api/v1/devices/{id}`.
+* Lecturas: `GET /api/auth/me`, `/api/health`, `/api/alerts`, `/api/team/health`, `/api/ai/actions` y `/api/accounts` (solo con varias cuentas).
+* Iniciar y cerrar sesión: `POST /api/auth/login` (`client: "api"`) y `POST /api/auth/logout`.
+* Cabeceras: `X-Monitor-Access` con el token de acceso y, en modo equipo, `Authorization: Bearer` con la sesión.
 * Enlace: `ghamon://proposal/<id>?hash=<64 caracteres hexadecimales>`.
 
 ## ⚙️ Configuración
 
-Todo valor ajustable está en `app/src/main/assets/app_config.json`: las rutas, los tiempos, el tamaño de página, los valores de push y el esquema del enlace. La dirección del monitor, su token y tu nombre se escriben en los ajustes de la app y se guardan en el móvil. Nada ajustable está en el código.
+Todo valor ajustable está en `app/src/main/assets/app_config.json`: las rutas, los tiempos, el límite de tamaño, la regla de push y el esquema del enlace. La dirección del monitor, su token de acceso y tu usuario se escriben en los ajustes de la app y se guardan en el móvil.
+
+El monitor necesita `listen.network` activado; un nombre (no una dirección) usado para llegar a él va en `listen.allowed_hosts`; pon el token de acceso en `MONITOR_ACCESS_TOKEN` para que no cambie en cada arranque; con usuarios (modo equipo) activa también `auth.allow_bearer`.
 
 ## 🚀 Inicio rápido
 
@@ -112,7 +117,7 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 Pruebas
 
-69 pruebas unitarias se ejecutan en la JVM (`./gradlew testDebugUnitTest`) sin móvil: el cliente de la API contra una red simulada, las reglas, los enlaces, el filtro push y los ajustes. 11 pruebas de Python cubren el repositorio y las comprobaciones ligeras de la app. El CI las ejecuta todas; nada de aquí se ha ejecutado en un móvil.
+64 pruebas unitarias se ejecutan en la JVM (`./gradlew testDebugUnitTest`) sin móvil: el cliente contra respuestas grabadas de un monitor de demostración, sus rechazos, los enlaces, los ajustes y la regla de push. Cinco de ellas hablan con monitores de demostración en marcha y se omiten salvo que el trabajo de CI "contract" los arranque. 11 pruebas de Python cubren el repositorio y las comprobaciones ligeras de la app. Nada de aquí se ha ejecutado en un móvil.
 
 ## 🏗️ Compilación y publicación
 
@@ -132,15 +137,18 @@ MONITOR-ANDROID/
 ├── app/
 │   ├── build.gradle.kts proguard-rules.pro                la compilación y las reglas de reducción
 │   ├── src/main/AndroidManifest.xml                       permisos, actividad, enlace ghamon://
-│   ├── src/main/assets/app_config.json                    rutas, tiempos, página, valores de push
+│   ├── src/main/assets/app_config.json                    rutas, tiempos, tamaño máximo, regla push
 │   ├── src/main/res/                                      los textos en ocho idiomas, iconos y temas
 │   ├── src/main/java/es/electrohobby3d/ghamonitor/core/   reglas probadas en la JVM
-│   ├── src/main/java/es/electrohobby3d/ghamonitor/        pantallas, view model, Keystore, push
-│   └── src/test/java/es/electrohobby3d/ghamonitor/core/   las pruebas unitarias en la JVM
+│   ├── src/main/java/es/electrohobby3d/ghamonitor/        pantallas, view model, tema, Keystore
+│   ├── src/test/java/es/electrohobby3d/ghamonitor/core/   las pruebas unitarias en la JVM
+│   ├── src/test/resources/contract/                       respuestas grabadas de un monitor de demo
+│   └── src/androidTest/                                   las capturas en un emulador
 ├── tools/
 │   ├── ci_validate.py                                     manifiesto, versiones, paridad de README
 │   ├── check_app.py                                       idiomas, recursos, configuración y secretos de la app
-│   └── make_architecture.py make_structure.py             dibujan las dos imágenes del README
+│   ├── make_architecture.py make_structure.py             dibujan las dos imágenes del README
+│   └── contract/                                          monitores de demo y grabación de respuestas
 ├── docs/                                                  las fuentes de las dos imágenes
 ├── gradle/                                                los archivos del wrapper de Gradle
 ├── gradlew                                                el wrapper de Gradle
@@ -163,14 +171,14 @@ MONITOR-ANDROID/
 
 **Límites conocidos hoy**
 
-* Versión preliminar: la app no se ha ejecutado en un móvil ni probado con un monitor real.
-* Las rutas de propuestas y dispositivos que llama aún no están en el monitor.
-* No hay servicio push: necesita un proyecto de Google y una clave que solo puede crear el mantenedor.
-* Aún no hay confirmación biométrica antes de aprobar.
+* Versión preliminar: la app no se ha ejecutado en un móvil.
+* La edición Lite del monitor no tiene alertas, repositorios ni propuestas, y la app solo puede decirlo.
+* No hay servicio push: el monitor todavía no envía mensajes push.
+* No se puede emparejar el móvil con el código QR del monitor; el token de acceso se escribe.
 
 **Siguiente**
 
-* Ejecutar el primer CI y corregir lo que encuentre, conectar las rutas del monitor y añadir el servicio push de Firebase cuando exista el proyecto de Google.
+* Probarla en un móvil contra un monitor real, después el emparejamiento por QR, y push cuando el monitor lo ofrezca.
 
 ## 🌍 Idiomas
 

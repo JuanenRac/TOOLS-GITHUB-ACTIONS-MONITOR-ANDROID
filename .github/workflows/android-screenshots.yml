@@ -1,0 +1,105 @@
+# =============================================================================
+# TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID - the pictures of the app for the README, taken in an emulator
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D)
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+# Takes the pictures of the app (app/src/androidTest ScreenshotsTest) in an Android emulator (API 34) of a GitHub runner against a demo monitor (invented data only) started on the
+# runner from the monitor commit pinned below, never on a phone. By hand or on a branch named screenshots-run/<anything>, so it never runs on main or on a pull
+# request. The pictures are the artifact "android-screenshots"; reduce them to a palette of 128 colours before they go to images/screenshots.
+
+name: Android screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "screenshots-run/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  emulator:
+    name: Screenshots in an API 34 emulator
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR
+          ref: 3654249ba89a21307d4d0512fa9e0f69f3b21784 # the monitor the app is checked against (2.2.0)
+          path: monitor-checkout
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Make the Gradle wrapper executable
+        run: chmod +x gradlew
+      - name: Build the app and its test before the monitor starts
+        run: ./gradlew --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Allow the emulator to use hardware acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Start an API 34 emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME}}"
+          export PATH="$SDK/cmdline-tools/latest/bin:$SDK/platform-tools:$SDK/emulator:$PATH"
+          export ANDROID_AVD_HOME="$HOME/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "emulator" "platform-tools" "system-images;android-34;google_apis;x86_64" >/dev/null
+          echo no | avdmanager create avd --force --name shots --package "system-images;android-34;google_apis;x86_64" --device pixel_6
+          nohup emulator -avd shots -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel on >emulator.log 2>&1 &
+          sleep 20
+          timeout 300 adb wait-for-device || { echo "no device appeared"; tail -n 60 emulator.log; exit 1; }
+          for _ in $(seq 1 120); do
+            [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ] && break
+            sleep 5
+          done
+          [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ] || { echo "the emulator did not finish booting"; tail -n 40 emulator.log; exit 1; }
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+      - name: Start the demo monitor (team mode)
+        run: |
+          nohup python3 tools/contract/demo_server.py "$GITHUB_WORKSPACE/monitor-checkout" 19802 --team >"$RUNNER_TEMP/monitor.log" 2>&1 &
+          for _ in $(seq 1 60); do
+            curl -fsS -H 'X-Monitor-Access: demo-access-0123456789' http://127.0.0.1:19802/api/health >/dev/null 2>&1 && exit 0
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/monitor.log"; exit 1
+      - name: Run the instrumented test
+        run: ./gradlew --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.monitor=http://10.0.2.2:19802
+      - name: Pull the pictures
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME}}"
+          export PATH="$SDK/platform-tools:$PATH"
+          mkdir -p "$RUNNER_TEMP/shots"
+          adb pull /data/local/tmp/shots/. "$RUNNER_TEMP/shots/" || true
+          ls -la "$RUNNER_TEMP/shots"
+          adb logcat -d -s TestRunner:* AndroidJUnitRunner:* System.err:* AndroidRuntime:* > "$RUNNER_TEMP/shots/logcat.txt" || true
+          cp "$RUNNER_TEMP/monitor.log" "$RUNNER_TEMP/shots/" || true
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ always() }}
+        with:
+          name: android-screenshots
+          path: ${{ runner.temp }}/shots
+          retention-days: 3
+          if-no-files-found: warn

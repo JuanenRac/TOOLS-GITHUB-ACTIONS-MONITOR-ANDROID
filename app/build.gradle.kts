@@ -7,8 +7,9 @@ android {
         applicationId = "es.electrohobby3d.ghamonitor"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2
-        versionName = "0.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        versionCode = 3
+        versionName = "0.1.1"
     }
     buildFeatures { compose = true; buildConfig = true }
     // The release is shrunk and obfuscated (R8). Signing is not done here: an APK is signed afterwards with the maintainer's own key, kept outside the repository.
@@ -35,6 +36,13 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.ui:ui")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+    // the pictures of the app: an instrumented test that runs in an emulator of a GitHub runner (android-screenshots.yml)
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
     testImplementation("junit:junit:4.13.2")
     // The Android stubs of org.json do nothing in local tests; the real library lets the parsers be tested on the JVM.
     testImplementation("org.json:json:20260814")

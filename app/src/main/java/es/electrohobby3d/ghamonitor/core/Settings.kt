@@ -1,4 +1,4 @@
-// TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID - what the person typed in the settings, and how it is kept: the token only sealed.
+// TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID - what the person typed in the settings, and how it is kept: the tokens only sealed, the password never.
 // Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
 package es.electrohobby3d.ghamonitor.core
 
@@ -17,35 +17,50 @@ interface SecretBox {
     fun open(sealed: String): String?
 }
 
-data class MonitorSettings(val baseUrl: String, val token: String, val userName: String) {
+/** [token] is the access token of the monitor; [session] the session of a person ("" unless the monitor asks to sign in and they did). */
+data class MonitorSettings(val baseUrl: String, val token: String, val session: String = "", val userName: String = "") {
     val configured: Boolean get() = baseUrl.isNotEmpty() && token.isNotEmpty()
 }
 
 class SettingsRepository(private val store: KeyValueStore, private val box: SecretBox) {
-    /** What is kept; an empty [MonitorSettings] when nothing is, and a token that cannot be opened is dropped (it is not guessed). */
-    fun load(): MonitorSettings {
-        val sealed = store.get(KEY_TOKEN)
-        val token = if (sealed == null) "" else box.open(sealed) ?: run { store.remove(KEY_TOKEN); "" }
-        return MonitorSettings(store.get(KEY_URL).orEmpty(), token, store.get(KEY_USER).orEmpty())
+    /** What is kept; a token that cannot be opened is dropped (it is not guessed). */
+    fun load(): MonitorSettings = MonitorSettings(store.get(KEY_URL).orEmpty(), open(KEY_TOKEN), open(KEY_SESSION), store.get(KEY_USER).orEmpty())
+
+    private fun open(key: String): String {
+        val sealed = store.get(key) ?: return ""
+        return box.open(sealed) ?: run { store.remove(key); "" }
     }
 
-    /** Keeps the address (already checked by [MonitorUrl]), the token sealed and the name. A blank token keeps the one that was there. */
-    fun save(baseUrl: String, token: String, userName: String) {
+    /**
+     * Keeps the address (already checked by [MonitorUrl]) and the token sealed. A blank token keeps the one that was there, but only for the same address: with another address the old
+     * token and session are dropped, so they are never sent to a host they were not typed for.
+     */
+    fun save(baseUrl: String, token: String) {
+        if (baseUrl != store.get(KEY_URL)) forgetToken()
         store.put(KEY_URL, baseUrl)
-        if (token.isNotBlank()) store.put(KEY_TOKEN, box.seal(token.trim()))
-        store.put(KEY_USER, userName.trim().take(64))
+        if (token.isNotBlank()) {
+            store.put(KEY_TOKEN, box.seal(token.trim()))
+            forgetSession()
+        }
     }
 
-    /** Forgets the token only (signing out of this monitor); the address stays. */
-    fun forgetToken() { store.remove(KEY_TOKEN) }
+    fun saveSession(userName: String, session: String) {
+        store.put(KEY_USER, userName.trim().take(64))
+        store.put(KEY_SESSION, box.seal(session))
+    }
 
-    fun clearAll() {
-        for (key in listOf(KEY_URL, KEY_TOKEN, KEY_USER)) store.remove(key)
+    fun forgetSession() { store.remove(KEY_SESSION) }
+
+    /** Forgets the token and the session; the address stays. */
+    fun forgetToken() {
+        store.remove(KEY_TOKEN)
+        forgetSession()
     }
 
     companion object {
         const val KEY_URL = "monitor_url"
         const val KEY_TOKEN = "monitor_token_sealed"
+        const val KEY_SESSION = "monitor_session_sealed"
         const val KEY_USER = "user_name"
     }
 }

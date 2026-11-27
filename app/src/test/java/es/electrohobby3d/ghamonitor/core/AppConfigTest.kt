@@ -10,7 +10,7 @@ class AppConfigTest {
     @Test fun theShippedFileIsValidAndNamesEveryEndpoint() {
         val config = Assets.config()
         assertEquals(AppConfig.REQUIRED_ENDPOINTS.toSet(), config.endpoints.keys)
-        assertTrue(config.endpoints.values.all { it.startsWith("/api/v1/") })
+        assertTrue(config.endpoints.values.all { it.startsWith("/api/") })
     }
 
     @Test fun pushIsOffByDefaultAndCriticalOnly() {
@@ -19,19 +19,12 @@ class AppConfigTest {
         assertEquals(Level.CRITICAL, push.onlyLevel)
     }
 
-    @Test fun placeholdersAreFilled() {
-        assertEquals("/api/v1/repos/acme/web/health", Assets.config().path("repo_health", "owner" to "acme", "repo" to "web"))
-    }
-
-    @Test fun aValueThatCouldAddASegmentOrAQueryIsRefused() {
+    @Test fun theEndpointsAreTheRoutesTheMonitorServes() {
         val config = Assets.config()
-        assertThrows(ConfigException::class.java) { config.path("proposal", "id" to "../admin") }
-        assertThrows(ConfigException::class.java) { config.path("proposal", "id" to "a?b=1") }
-        assertThrows(ConfigException::class.java) { config.path("proposal", "id" to "") }
-    }
-
-    @Test fun anUnfilledPlaceholderIsAnError() {
-        assertThrows(ConfigException::class.java) { Assets.config().path("repo_health", "owner" to "acme") }
+        assertEquals("/api/alerts", config.path("alerts"))
+        assertEquals("/api/team/health", config.path("team_health"))
+        assertEquals("/api/ai/actions", config.path("proposals"))
+        assertEquals("/api/auth/login", config.path("login"))
     }
 
     @Test fun anUnknownEndpointIsAnError() {
@@ -44,17 +37,17 @@ class AppConfigTest {
     }
 
     @Test fun aMissingEndpointIsRefusedWhenTheFileIsRead() {
-        val text = Assets.configText().replace("\"devices\": \"/api/v1/devices\",", "")
+        val text = Assets.configText().replace("\"alerts\": \"/api/alerts\",", "")
         assertThrows(ConfigException::class.java) { AppConfig.parse(text) }
     }
 
     @Test fun anEndpointOutsideTheApiIsRefused() {
-        val text = Assets.configText().replace("/api/v1/health", "/admin/health")
+        val text = Assets.configText().replace("/api/health", "/admin/health")
         assertThrows(ConfigException::class.java) { AppConfig.parse(text) }
     }
 
     @Test fun valuesOutOfRangeAreRefused() {
-        val text = Assets.configText().replace("\"page_size\": 30", "\"page_size\": 5000")
+        val text = Assets.configText().replace("\"connect_timeout_ms\": 8000", "\"connect_timeout_ms\": 5")
         assertThrows(ConfigException::class.java) { AppConfig.parse(text) }
     }
 

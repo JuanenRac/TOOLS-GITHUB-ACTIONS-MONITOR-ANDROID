@@ -43,10 +43,5 @@ class ReverseBox : SecretBox {
     override fun open(sealed: String): String? = if (sealed.startsWith("sealed:")) sealed.removePrefix("sealed:").reversed() else null
 }
 
-fun proposal(
-    id: String = "p000001",
-    state: String = "pending",
-    createdBy: String = "system:sentinel",
-    expiresAt: Long = 2_000_000_000L,
-    hash: String = "a".repeat(64),
-) = Proposal(id, "main", "owner/repo", "rerun", "a flaky test", createdBy, 1_700_000_000L, expiresAt, state, hash, "")
+fun proposal(id: String = "p000001", hash: String = "a".repeat(64), status: String = "pending") =
+    Proposal(id, "rerun_failed", "gh run rerun 1 --failed -R owner/repo", "repo", hash, status, "demo-user", "", 0, 60, 540)

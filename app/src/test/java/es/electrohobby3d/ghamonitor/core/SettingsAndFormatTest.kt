@@ -10,23 +10,44 @@ import org.junit.Test
 class SettingsAndFormatTest {
     // ---- settings ----
 
-    @Test fun theTokenIsKeptSealedAndNeverAsPlainText() {
+    @Test fun theTokensAreKeptSealedAndNeverAsPlainText() {
         val store = MemoryStore()
         val repo = SettingsRepository(store, ReverseBox())
-        repo.save("https://monitor.example", "  my-secret-token  ", " Ana ")
-        assertTrue(store.map.values.none { it.contains("my-secret-token") })
+        repo.save("https://monitor.example", "  my-access-token  ")
+        repo.saveSession(" Ana ", "msn_session-token")
+        assertTrue(store.map.values.none { it.contains("my-access-token") || it.contains("msn_session-token") })
         val loaded = repo.load()
-        assertEquals(MonitorSettings("https://monitor.example", "my-secret-token", "Ana"), loaded)
+        assertEquals(MonitorSettings("https://monitor.example", "my-access-token", "msn_session-token", "Ana"), loaded)
         assertTrue(loaded.configured)
     }
 
-    @Test fun savingWithABlankTokenKeepsTheOldOne() {
+    @Test fun savingTheSameAddressWithABlankTokenKeepsTokenAndSession() {
         val repo = SettingsRepository(MemoryStore(), ReverseBox())
-        repo.save("https://a.example", "first-token", "")
-        repo.save("https://b.example", "   ", "Bea")
+        repo.save("https://a.example", "first-token")
+        repo.saveSession("ana", "msn_one")
+        repo.save("https://a.example", "   ")
+        assertEquals("first-token", repo.load().token)
+        assertEquals("msn_one", repo.load().session)
+    }
+
+    @Test fun anotherAddressNeverReceivesTheOldTokens() {
+        val repo = SettingsRepository(MemoryStore(), ReverseBox())
+        repo.save("https://a.example", "first-token")
+        repo.saveSession("ana", "msn_one")
+        repo.save("https://b.example", "")
         val loaded = repo.load()
-        assertEquals("first-token", loaded.token)
         assertEquals("https://b.example", loaded.baseUrl)
+        assertEquals("", loaded.token)
+        assertEquals("", loaded.session)
+        assertFalse(loaded.configured)
+    }
+
+    @Test fun aNewTokenEndsTheOldSession() {
+        val repo = SettingsRepository(MemoryStore(), ReverseBox())
+        repo.save("https://a.example", "first-token")
+        repo.saveSession("ana", "msn_one")
+        repo.save("https://a.example", "second-token")
+        assertEquals("", repo.load().session)
     }
 
     @Test fun aTokenThatCannotBeOpenedIsDroppedNotGuessed() {
@@ -39,26 +60,20 @@ class SettingsAndFormatTest {
         assertNull(store.get(SettingsRepository.KEY_TOKEN))
     }
 
-    @Test fun forgettingTheTokenKeepsTheAddress() {
+    @Test fun forgettingTheTokenKeepsTheAddressAndEndsTheSession() {
         val repo = SettingsRepository(MemoryStore(), ReverseBox())
-        repo.save("https://a.example", "tok-123456", "")
+        repo.save("https://a.example", "tok-123456")
+        repo.saveSession("ana", "msn_one")
         repo.forgetToken()
         val loaded = repo.load()
         assertEquals("https://a.example", loaded.baseUrl)
         assertEquals("", loaded.token)
-    }
-
-    @Test fun clearingRemovesEverything() {
-        val store = MemoryStore()
-        val repo = SettingsRepository(store, ReverseBox())
-        repo.save("https://a.example", "tok-123456", "Ana")
-        repo.clearAll()
-        assertTrue(store.map.isEmpty())
+        assertEquals("", loaded.session)
     }
 
     @Test fun theNameIsCutToSixtyFourCharacters() {
         val repo = SettingsRepository(MemoryStore(), ReverseBox())
-        repo.save("https://a.example", "tok-123456", "n".repeat(200))
+        repo.saveSession("n".repeat(200), "msn_x")
         assertEquals(64, repo.load().userName.length)
     }
 
@@ -81,24 +96,14 @@ class SettingsAndFormatTest {
         assertEquals("2d 03h", Format.duration(2 * 86_400 + 3 * 3600))
     }
 
-    @Test fun reposAreSortedByTheirWorstAlert() {
-        fun alert(repo: String, level: String) = Alert("i-$repo-$level", "c", level, "", "", repo, "", "")
-        val rows = Format.reposByWorst(
-            listOf(alert("z/z", "warning"), alert("a/a", "info"), alert("b/b", "critical"), alert("b/b", "warning"), alert("a/b", "critical"), alert("", "critical")),
-        )
-        assertEquals(listOf("a/b" to "critical", "b/b" to "critical", "z/z" to "warning", "a/a" to "info"), rows)
-    }
-
-    @Test fun aRepoNameIsSplitOrRefused() {
-        assertEquals("acme" to "web.site-1", Format.splitRepo(" acme/web.site-1 "))
-        for (bad in listOf("", "acme", "acme/", "/web", "a/b/c", "a b/c", "acme/web?x=1")) assertNull(bad, Format.splitRepo(bad))
-    }
-
     // ---- words ----
 
     @Test fun severityWordsAreMappedAndUnknownOnesAreNotGuessed() {
         assertEquals(0, severityOf("ok"))
-        assertEquals(0, severityOf("GREEN"))
+        assertEquals(0, severityOf("OK"))
+        assertEquals(1, severityOf("warn"))
+        assertEquals(2, severityOf("bad"))
+        assertEquals(-1, severityOf("unknown"))
         assertEquals(1, severityOf("warning"))
         assertEquals(2, severityOf("error"))
         assertEquals(3, severityOf("critical"))
@@ -110,13 +115,5 @@ class SettingsAndFormatTest {
         assertTrue(Level.CRITICAL.rank > Level.ERROR.rank && Level.ERROR.rank > Level.WARNING.rank && Level.WARNING.rank > Level.INFO.rank)
         assertEquals(Level.WARNING, Level.parse("warning"))
         assertNull(Level.parse("Warning"))
-    }
-
-    @Test fun aProposalIsReadWithItsNumbers() {
-        val p = Parsers.proposal(org.json.JSONObject("""{"id":"p1","account_id":"main","repo":"o/r","action_type":"label","state":"pending","created_at":1700000000,"expires_at":null,"content_hash":"h","approved_by":null}"""))
-        assertEquals("label", p.actionType)
-        assertEquals(1_700_000_000L, p.createdAt)
-        assertEquals(0L, p.expiresAt)
-        assertEquals("", p.approvedBy)
     }
 }

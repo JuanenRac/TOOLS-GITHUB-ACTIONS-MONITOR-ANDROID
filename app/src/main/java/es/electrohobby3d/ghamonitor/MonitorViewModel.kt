@@ -7,30 +7,26 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import es.electrohobby3d.ghamonitor.core.Account
-import es.electrohobby3d.ghamonitor.core.Alert
+import es.electrohobby3d.ghamonitor.core.AlertList
 import es.electrohobby3d.ghamonitor.core.ApiException
 import es.electrohobby3d.ghamonitor.core.AppConfig
+import es.electrohobby3d.ghamonitor.core.AuthState
 import es.electrohobby3d.ghamonitor.core.ConfigException
 import es.electrohobby3d.ghamonitor.core.DeepLink
-import es.electrohobby3d.ghamonitor.core.DeviceApi
 import es.electrohobby3d.ghamonitor.core.ErrorKey
-import es.electrohobby3d.ghamonitor.core.Format
-import es.electrohobby3d.ghamonitor.core.Health
 import es.electrohobby3d.ghamonitor.core.HttpUrlTransport
 import es.electrohobby3d.ghamonitor.core.MonitorApi
 import es.electrohobby3d.ghamonitor.core.MonitorSettings
 import es.electrohobby3d.ghamonitor.core.MonitorUrl
 import es.electrohobby3d.ghamonitor.core.Proposal
 import es.electrohobby3d.ghamonitor.core.ProposalLink
-import es.electrohobby3d.ghamonitor.core.PushController
-import es.electrohobby3d.ghamonitor.core.PushRegistrar
-import es.electrohobby3d.ghamonitor.core.PushState
-import es.electrohobby3d.ghamonitor.core.RepoHealth
+import es.electrohobby3d.ghamonitor.core.ProposalList
 import es.electrohobby3d.ghamonitor.core.SettingsRepository
-import es.electrohobby3d.ghamonitor.core.StatusInfo
+import es.electrohobby3d.ghamonitor.core.Summary
+import es.electrohobby3d.ghamonitor.core.TeamHealth
 import es.electrohobby3d.ghamonitor.core.UrlCheck
 import es.electrohobby3d.ghamonitor.core.UrlProblem
+import es.electrohobby3d.ghamonitor.core.loadSummary
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,37 +36,28 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class AccountRow(val account: Account, val status: StatusInfo?)
-data class SummaryData(val health: Health, val status: StatusInfo, val accounts: List<AccountRow>, val recent: List<Alert>)
-enum class PendingDecision { APPROVE, REJECT }
-enum class Notice { SETTINGS_SAVED, TOKEN_FORGOTTEN, PROPOSAL_APPROVED, PROPOSAL_REJECTED }
+enum class Notice { SETTINGS_SAVED, TOKEN_FORGOTTEN, CONNECTED, SIGNED_OUT }
 
-/** The proposal open on the screen: [linkMismatch] is true when it was opened by a link whose hash is not the content the monitor holds now (then approving is not offered). */
-data class ProposalDetail(val proposal: Proposal, val linkMismatch: Boolean, val pending: PendingDecision? = null)
+/** The proposal open on the screen: [linkMismatch] is true when it was opened by a link whose hash is not the content the monitor holds now. */
+data class ProposalDetail(val proposal: Proposal, val linkMismatch: Boolean)
 
 data class UiState(
     val configProblem: Boolean = false,
-    val settings: MonitorSettings = MonitorSettings("", "", ""),
+    val settings: MonitorSettings = MonitorSettings("", ""),
     val tab: Int = 0,
     val loading: Boolean = false,
     val error: ErrorKey? = null,
     val notice: Notice? = null,
     val urlProblem: UrlProblem? = null,
-    val summary: SummaryData? = null,
-    val alerts: List<Alert> = emptyList(),
-    val alertsCursor: String? = null,
+    val auth: AuthState? = null,
+    val summary: Summary? = null,
+    val alerts: AlertList? = null,
     val alertLevel: String? = null,
-    val repos: List<Pair<String, String>> = emptyList(),
-    val repoLookup: RepoHealth? = null,
-    val repoLookupInvalid: Boolean = false,
-    val proposals: List<Proposal> = emptyList(),
-    val proposalsCursor: String? = null,
+    val repos: TeamHealth? = null,
+    val repoFilter: String = "",
+    val proposals: ProposalList? = null,
     val proposalFilter: String? = null,
     val detail: ProposalDetail? = null,
-    val pushEnabled: Boolean = false,
-    val pushAvailable: Boolean = false,
-    val pushState: PushState? = null,
-    val fourEyesHint: Boolean = true,
 )
 
 class MonitorViewModel(app: Application) : AndroidViewModel(app) {
@@ -78,8 +65,7 @@ class MonitorViewModel(app: Application) : AndroidViewModel(app) {
         const val PREFS = "ghamonitor_settings"
     }
 
-    private val store = PreferencesStore(app.getSharedPreferences(PREFS, Context.MODE_PRIVATE))
-    private val settingsRepo = SettingsRepository(store, KeystoreBox())
+    private val settingsRepo = SettingsRepository(PreferencesStore(app.getSharedPreferences(PREFS, Context.MODE_PRIVATE)), KeystoreBox())
     private val config: AppConfig? = try {
         AppConfig.parse(app.assets.open("app_config.json").bufferedReader().use { it.readText() })
     } catch (e: ConfigException) {
@@ -92,41 +78,63 @@ class MonitorViewModel(app: Application) : AndroidViewModel(app) {
     val ui: StateFlow<UiState> = _ui.asStateFlow()
 
     private var api: MonitorApi? = null
-    private var controller: PushController? = null
 
     init {
         reloadSettings()
     }
 
-    // ---- settings -------------------------------------------------------------------------------------------------------------------------------------
+    // ---- settings and signing in ----------------------------------------------------------------------------------------------------------------------
 
+    /** Reads what is kept and makes a client for it; what was shown belonged to the settings before, so it goes. */
     private fun reloadSettings() {
         val cfg = config ?: return
         val settings = settingsRepo.load()
-        api = if (settings.configured) MonitorApi(settings.baseUrl, settings.token, HttpUrlTransport(cfg.api), cfg) else null
-        val registrar = wrap(PushHub.registrar)
-        controller = PushController(registrar, object : DeviceApi {
-            override fun registerDevice(deviceToken: String, platform: String): String = (api ?: throw ApiException(ErrorKey.NOT_CONFIGURED)).registerDevice(deviceToken, platform)
-            override fun unregisterDevice(id: String) { (api ?: throw ApiException(ErrorKey.NOT_CONFIGURED)).unregisterDevice(id) }
-        }, store)
-        _ui.update { it.copy(settings = settings, pushEnabled = controller?.enabled == true, pushAvailable = registrar.available, fourEyesHint = cfg.proposals.fourEyesHint) }
+        api = if (settings.configured) MonitorApi(settings.baseUrl, settings.token, settings.session, HttpUrlTransport(cfg.api), cfg) else null
+        _ui.update { it.copy(settings = settings, loading = false, auth = null, summary = null, alerts = null, repos = null, proposals = null, detail = null) }
     }
 
-    /** The push service calls back on any thread; the controller talks to the network, so the callback is moved to a background one. */
-    private fun wrap(inner: PushRegistrar): PushRegistrar = object : PushRegistrar {
-        override val available: Boolean = inner.available
-        override fun fetchToken(onResult: (String?) -> Unit) = inner.fetchToken { token -> viewModelScope.launch(Dispatchers.IO) { onResult(token) } }
-    }
-
-    fun saveSettings(url: String, token: String, userName: String) {
+    /** Keeps the address and the token, then asks the monitor who we are: that says whether the token is right and whether it also asks a person to sign in. */
+    fun saveSettings(url: String, token: String) {
         when (val checked = MonitorUrl.check(url)) {
             is UrlCheck.Bad -> _ui.update { it.copy(urlProblem = checked.reason, notice = null) }
             is UrlCheck.Good -> {
-                val changed = checked.base != _ui.value.settings.baseUrl
-                settingsRepo.save(checked.base, token, userName)
-                if (changed) forgetDevice()
+                settingsRepo.save(checked.base, token)
                 reloadSettings()
                 _ui.update { it.copy(urlProblem = null, notice = Notice.SETTINGS_SAVED, error = null) }
+                if (api != null) checkConnection()
+            }
+        }
+    }
+
+    fun checkConnection() {
+        call({ it.me() }) { auth -> _ui.update { it.copy(auth = auth, notice = if (auth.needsSignIn) null else Notice.CONNECTED, error = if (auth.bootstrap) ErrorKey.BOOTSTRAP else null) } }
+    }
+
+    /** The password goes to the monitor and nowhere else; what is kept is the session it gives back, sealed. */
+    fun signIn(user: String, password: String) {
+        if (user.isBlank() || password.isEmpty()) {
+            _ui.update { it.copy(error = ErrorKey.INVALID_CREDENTIALS, notice = null) }
+            return
+        }
+        call({ it.login(user.trim(), password) }) { session ->
+            settingsRepo.saveSession(session.user, session.token)
+            reloadSettings()
+            checkConnection()
+        }
+    }
+
+    fun signOut() {
+        val client = api
+        settingsRepo.forgetSession()
+        reloadSettings()
+        _ui.update { it.copy(notice = Notice.SIGNED_OUT, error = null) }
+        if (client != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    client.logout()
+                } catch (e: ApiException) {
+                    // the session is gone from this phone either way; the monitor ends it by itself when it runs out
+                }
             }
         }
     }
@@ -134,32 +142,8 @@ class MonitorViewModel(app: Application) : AndroidViewModel(app) {
     fun forgetToken() {
         settingsRepo.forgetToken()
         reloadSettings()
-        _ui.update { it.copy(notice = Notice.TOKEN_FORGOTTEN) }
+        _ui.update { it.copy(notice = Notice.TOKEN_FORGOTTEN, error = null) }
     }
-
-    /** A new address means a different monitor: the device registered at the old one is forgotten here, and the switch goes off. */
-    private fun forgetDevice() {
-        store.remove(PushController.KEY_DEVICE)
-        store.put(PushController.KEY_ENABLED, "0")
-    }
-
-    fun clearMessages() { _ui.update { it.copy(notice = null, error = null, pushState = null) } }
-
-    // ---- push -----------------------------------------------------------------------------------------------------------------------------------------
-
-    fun setPush(on: Boolean) {
-        val c = controller ?: return
-        viewModelScope.launch(Dispatchers.IO) {
-            if (on) {
-                c.turnOn { state -> _ui.update { it.copy(pushEnabled = c.enabled, pushState = state) } }
-            } else {
-                val state = c.turnOff()
-                _ui.update { it.copy(pushEnabled = c.enabled, pushState = state) }
-            }
-        }
-    }
-
-    fun pushPermissionDenied() { _ui.update { it.copy(pushState = PushState.REGISTER_FAILED, pushEnabled = false) } }
 
     // ---- calls ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -181,122 +165,70 @@ class MonitorViewModel(app: Application) : AndroidViewModel(app) {
                     Result.failure(ApiException(ErrorKey.UNKNOWN))
                 }
             }
+            if (client !== api) return@launch      // the settings changed while the monitor was being asked
             val value = result.getOrNull()
             if (result.isSuccess && value != null) {
-                done(value)
                 _ui.update { it.copy(loading = false) }
+                done(value)
             } else {
-                val key = (result.exceptionOrNull() as? ApiException)?.key ?: ErrorKey.UNKNOWN
-                _ui.update { it.copy(loading = false, error = key) }
+                failed((result.exceptionOrNull() as? ApiException)?.key ?: ErrorKey.UNKNOWN)
             }
         }
     }
 
-    fun refreshSummary() = call({ client ->
-        val health = client.health()
-        val status = client.status()
-        val rows = client.accounts().take(20).map { account -> AccountRow(account, try { client.accountStatus(account.id) } catch (e: ApiException) { null }) }
-        SummaryData(health, status, rows, client.alerts().items.take(5))
-    }) { data -> _ui.update { it.copy(summary = data) } }
-
-    fun loadAlerts(more: Boolean) {
-        val cursor = if (more) _ui.value.alertsCursor else null
-        if (more && cursor == null) return
-        val level = _ui.value.alertLevel
-        val keep = config?.let { it.api.pageSize * it.api.maxPagesInMemory } ?: 300
-        call({ it.alerts(cursor, level) }) { page ->
-            _ui.update { s -> s.copy(alerts = if (more) (s.alerts + page.items).takeLast(keep) else page.items, alertsCursor = page.nextCursor) }
+    /** A session that ran out is forgotten, and the settings show the sign-in again. */
+    private fun failed(key: ErrorKey) {
+        if (key == ErrorKey.SIGN_IN) {
+            settingsRepo.forgetSession()
+            reloadSettings()
+            _ui.update { it.copy(auth = AuthState(teamMode = true, authenticated = false, bootstrap = false, user = "", role = "")) }
         }
+        _ui.update { it.copy(loading = false, error = key, notice = null) }
+    }
+
+    fun refreshSummary() = call({ loadSummary(it) }) { data ->
+        if (data.error == ErrorKey.SIGN_IN) failed(ErrorKey.SIGN_IN) else _ui.update { it.copy(summary = data) }
+    }
+
+    fun loadAlerts() {
+        val level = _ui.value.alertLevel
+        call({ it.alerts(level) }) { list -> _ui.update { it.copy(alerts = list) } }
     }
 
     fun setAlertLevel(level: String?) {
-        _ui.update { it.copy(alertLevel = level, alerts = emptyList(), alertsCursor = null) }
-        loadAlerts(false)
+        _ui.update { it.copy(alertLevel = level, alerts = null) }
+        loadAlerts()
     }
 
-    fun loadRepos() {
-        val pages = config?.api?.maxPagesInMemory ?: 1
-        call({ client ->
-            val all = ArrayList<Alert>()
-            var cursor: String? = null
-            var n = 0
-            do {
-                val page = client.alerts(cursor)
-                all.addAll(page.items)
-                cursor = page.nextCursor
-                n++
-            } while (cursor != null && n < pages)
-            Format.reposByWorst(all)
-        }) { repos -> _ui.update { it.copy(repos = repos) } }
+    fun loadRepos(filter: String = _ui.value.repoFilter) {
+        val text = filter.trim().take(80)
+        _ui.update { it.copy(repoFilter = text) }
+        call({ it.teamHealth(text) }) { team -> _ui.update { it.copy(repos = team) } }
     }
 
-    fun lookupRepo(text: String) {
-        val parts = Format.splitRepo(text)
-        if (parts == null) {
-            _ui.update { it.copy(repoLookupInvalid = true, repoLookup = null) }
-            return
-        }
-        _ui.update { it.copy(repoLookupInvalid = false) }
-        call({ it.repoHealth(parts.first, parts.second) }) { health -> _ui.update { it.copy(repoLookup = health) } }
-    }
+    fun loadProposals() = call({ it.proposals() }) { list -> _ui.update { it.copy(proposals = list) } }
 
-    fun loadProposals(more: Boolean) {
-        val cursor = if (more) _ui.value.proposalsCursor else null
-        if (more && cursor == null) return
-        val state = _ui.value.proposalFilter
-        call({ it.proposals(state, cursor) }) { page ->
-            _ui.update { s -> s.copy(proposals = if (more) s.proposals + page.items else page.items, proposalsCursor = page.nextCursor) }
-        }
-    }
+    fun setProposalFilter(status: String?) { _ui.update { it.copy(proposalFilter = status) } }
 
-    fun setProposalFilter(state: String?) {
-        _ui.update { it.copy(proposalFilter = state, proposals = emptyList(), proposalsCursor = null) }
-        loadProposals(false)
-    }
+    fun openProposal(proposal: Proposal) { _ui.update { it.copy(detail = ProposalDetail(proposal, false)) } }
 
-    fun openProposal(id: String, link: ProposalLink? = null) {
-        call({ it.proposal(id) }) { proposal ->
-            val mismatch = link != null && !DeepLink.matches(link, proposal)
-            _ui.update { it.copy(detail = ProposalDetail(proposal, mismatch)) }
+    private fun openLinked(link: ProposalLink) = call({ it.proposals() }) { list ->
+        val found = list.items.firstOrNull { it.id == link.proposalId }
+        _ui.update { s ->
+            if (found == null) s.copy(proposals = list, error = ErrorKey.NOT_FOUND) else s.copy(proposals = list, detail = ProposalDetail(found, !DeepLink.matches(link, found)))
         }
     }
 
     fun closeProposal() { _ui.update { it.copy(detail = null) } }
 
-    fun askDecision(decision: PendingDecision?) { _ui.update { s -> s.copy(detail = s.detail?.copy(pending = decision)) } }
-
-    /** Sends the decision the person confirmed. An approval carries the hash of the content that was on the screen. */
-    fun confirmDecision(note: String) {
-        val detail = _ui.value.detail ?: return
-        val decision = detail.pending ?: return
-        val proposal = detail.proposal
-        call({ client ->
-            if (decision == PendingDecision.APPROVE) client.approve(proposal.id, proposal.contentHash) else client.reject(proposal.id, note)
-        }) { updated ->
-            _ui.update { s ->
-                s.copy(
-                    detail = ProposalDetail(updated, false),
-                    proposals = s.proposals.map { if (it.id == updated.id) updated else it },
-                    notice = if (decision == PendingDecision.APPROVE) Notice.PROPOSAL_APPROVED else Notice.PROPOSAL_REJECTED,
-                )
-            }
-        }
-    }
-
     // ---- navigation -----------------------------------------------------------------------------------------------------------------------------------
 
-    fun selectTab(tab: Int) { _ui.update { it.copy(tab = tab, error = null, notice = null) } }
+    fun selectTab(tab: Int) { _ui.update { it.copy(tab = tab, error = null, notice = null, detail = null) } }
 
-    /** A link (ghamon://proposal/...) or a tap on a notification: open what it names. A link never approves anything by itself. */
+    /** A link (ghamon://proposal/...): open what it names. A link never decides anything. */
     fun handleIntent(intent: Intent?) {
-        if (intent == null) return
-        val link = DeepLink.parse(intent.dataString)
-        if (link != null) {
-            selectTab(MainActivity.TAB_PROPOSALS)
-            openProposal(link.proposalId, link)
-            return
-        }
-        val tab = intent.getIntExtra(MainActivity.EXTRA_TAB, -1)
-        if (tab in 0..MainActivity.TAB_SETTINGS) selectTab(tab)
+        val link = DeepLink.parse(intent?.dataString) ?: return
+        selectTab(MainActivity.TAB_PROPOSALS)
+        openLinked(link)
     }
 }

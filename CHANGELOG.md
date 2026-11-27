@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.1] - The app talks to the routes the monitor really serves
+
+This release is preliminary: the app has not been tested on a real phone. It was checked against demo monitors in GitHub Actions and pictured in an emulator.
+
+- **The screens read the real routes:** the summary asked for a status route the monitor does not have and failed whole, and the alerts, accounts and repositories were read with a shape the monitor never sends, so they stayed empty. The app now asks `/api/health`, `/api/alerts`, `/api/team/health`, `/api/ai/actions` and, for several accounts, `/api/accounts`, and each part of the summary fails by itself. An answer without the list it should have is an error, never an empty screen.
+- **Signing in as the monitor asks:** the access token of the network mode travels in `X-Monitor-Access`; when the monitor also has users (team mode) the app asks for the user and password once, keeps only the session it gets back, sealed, and signs out on request. Each refusal has its own words: wrong token, address not allowed, locked out, sessions for apps switched off, no administrator yet. A change of address drops the stored token and session, so they are never sent to another host.
+- **Proposals are read only:** the monitor accepts approval and rejection only on its own computer, so the approve and reject buttons are gone; the app shows the exact command, its hash, who asked and how long it has left. The links `ghamon://proposal/<id>?hash=<hex>` still open one proposal.
+- **No push switch:** the monitor has no push service and no route to register a phone, so the switch and the notification permission are gone until it does.
+- **The look and the pictures:** the colours of the monitor with the cards, headings, status lights and one icon per tab that the other apps of the author share, and the first screenshots, taken in an emulator against a demo monitor.
+- **Tests against the real shapes:** the client is tested with answers recorded from the demo monitors, and the CI starts those monitors from a pinned commit, checks that the recorded answers still hold and runs the client and its network code against them.
+
 ## [0.1.0] - The first preliminary release: the Android client, a manual APK build and eight languages
 
 This release is preliminary: the app has not been tested on a real phone and has never talked to a real monitor.

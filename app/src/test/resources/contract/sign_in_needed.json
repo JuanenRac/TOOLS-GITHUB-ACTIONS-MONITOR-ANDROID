@@ -1,0 +1,9 @@
+{
+ "request": "GET /api/alerts",
+ "status": 401,
+ "body": {
+  "ok": false,
+  "error": "sign in first",
+  "code": "auth_required"
+ }
+}

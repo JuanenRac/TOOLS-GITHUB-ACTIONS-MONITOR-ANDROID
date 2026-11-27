@@ -1,0 +1,9 @@
+{
+ "request": "POST /api/auth/login",
+ "status": 401,
+ "body": {
+  "ok": false,
+  "error": "wrong user name or password",
+  "code": "invalid_credentials"
+ }
+}

@@ -1,0 +1,135 @@
+{
+ "request": "GET /api/team/health",
+ "status": 200,
+ "body": {
+  "schema": 1,
+  "all": 6,
+  "shown": 6,
+  "truncated": false,
+  "totals": {
+   "unknown": 0,
+   "ok": 1,
+   "warn": 3,
+   "bad": 2,
+   "not_fully_seen": 0
+  },
+  "by_ecosystem": {
+   "alpha": {
+    "repos": 2,
+    "bad": 1,
+    "warn": 1,
+    "ok": 0,
+    "unknown": 0,
+    "risk": 53
+   },
+   "beta": {
+    "repos": 2,
+    "bad": 0,
+    "warn": 2,
+    "ok": 0,
+    "unknown": 0,
+    "risk": 6
+   },
+   "gamma": {
+    "repos": 2,
+    "bad": 1,
+    "warn": 0,
+    "ok": 1,
+    "unknown": 0,
+    "risk": 84
+   }
+  },
+  "alerts": {
+   "by_sentinel": {
+    "security": 5,
+    "ci": 3,
+    "collab": 4
+   },
+   "by_level": {
+    "warning": 7,
+    "info": 2,
+    "error": 3
+   }
+  },
+  "ranking": [
+   {
+    "repo": "demo-gamma-api",
+    "ecosystem": "gamma",
+    "state": "bad",
+    "risk": 83,
+    "red_workflows": 2,
+    "alerts": 3,
+    "failures_24h": 2,
+    "last_run_at": "2026-11-27T20:37:10Z",
+    "release_next": null,
+    "not_fully_seen": []
+   },
+   {
+    "repo": "demo-alpha-app",
+    "ecosystem": "alpha",
+    "state": "bad",
+    "risk": 50,
+    "red_workflows": 1,
+    "alerts": 5,
+    "failures_24h": 3,
+    "last_run_at": "2026-11-27T20:37:10Z",
+    "release_next": null,
+    "not_fully_seen": []
+   },
+   {
+    "repo": "demo-alpha-core",
+    "ecosystem": "alpha",
+    "state": "warn",
+    "risk": 3,
+    "red_workflows": 0,
+    "alerts": 1,
+    "failures_24h": 0,
+    "last_run_at": "2026-11-27T20:37:10Z",
+    "release_next": null,
+    "not_fully_seen": []
+   },
+   {
+    "repo": "demo-beta-docs",
+    "ecosystem": "beta",
+    "state": "warn",
+    "risk": 3,
+    "red_workflows": 0,
+    "alerts": 1,
+    "failures_24h": 1,
+    "last_run_at": "2026-11-27T20:37:10Z",
+    "release_next": null,
+    "not_fully_seen": []
+   },
+   {
+    "repo": "demo-beta-fw",
+    "ecosystem": "beta",
+    "state": "warn",
+    "risk": 3,
+    "red_workflows": 0,
+    "alerts": 1,
+    "failures_24h": 0,
+    "last_run_at": "2026-11-27T20:37:10Z",
+    "release_next": null,
+    "not_fully_seen": []
+   },
+   {
+    "repo": "demo-gamma-ui",
+    "ecosystem": "gamma",
+    "state": "ok",
+    "risk": 1,
+    "red_workflows": 0,
+    "alerts": 1,
+    "failures_24h": 0,
+    "last_run_at": "2026-11-27T20:37:10Z",
+    "release_next": null,
+    "not_fully_seen": []
+   }
+  ],
+  "filters": {
+   "ecosystem": "",
+   "severity": "",
+   "q": "",
+   "label": ""
+  }
+ }
+}

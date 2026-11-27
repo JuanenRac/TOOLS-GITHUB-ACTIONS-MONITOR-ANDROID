@@ -1,0 +1,16 @@
+{
+ "request": "GET /api/auth/me",
+ "status": 200,
+ "body": {
+  "enabled": true,
+  "mode": "team",
+  "authenticated": true,
+  "bootstrap": false,
+  "user": "demo-admin",
+  "role": "admin",
+  "accounts": [
+   "*"
+  ],
+  "csrf": "example"
+ }
+}

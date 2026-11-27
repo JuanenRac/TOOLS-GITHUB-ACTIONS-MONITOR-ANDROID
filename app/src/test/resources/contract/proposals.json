@@ -1,0 +1,38 @@
+{
+ "request": "GET /api/ai/actions",
+ "status": 200,
+ "body": {
+  "state": {
+   "enabled": true,
+   "execute": false,
+   "locked": false,
+   "pending": 1,
+   "require_approval": true,
+   "allowed": [
+    "rerun_failed",
+    "close_issue"
+   ],
+   "ran_last_hour": 0,
+   "max_per_hour": 5
+  },
+  "log": [],
+  "proposals": [
+   {
+    "id": "demo1",
+    "action": "rerun_failed",
+    "command": "gh run rerun 104 --failed -R demo-owner/demo-alpha-app",
+    "repo": "demo-alpha-app",
+    "runnable": false,
+    "origin": "ia",
+    "creator": "demo-user",
+    "hash": "8ebd02264c7379856531bc4282848390b56360648da72f2344c3f7a718c988be",
+    "approvals": 0,
+    "status": "pending",
+    "by": "",
+    "age_s": 0,
+    "expires_in_s": 3599
+   }
+  ],
+  "ai": null
+ }
+}

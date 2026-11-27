@@ -1,0 +1,7 @@
+{
+ "request": "POST /api/auth/logout",
+ "status": 200,
+ "body": {
+  "ok": true
+ }
+}

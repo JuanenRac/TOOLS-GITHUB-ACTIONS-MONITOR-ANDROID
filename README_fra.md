@@ -6,32 +6,32 @@
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | 🇫🇷 <b>Français</b> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
 
-### Application Android native de GitHub Actions Monitor : résumé, alertes, dépôts et propositions sur le téléphone, avec des notifications push uniquement critiques, désactivées par défaut.
+### Client Android natif de GitHub Actions Monitor : résumé, alertes, dépôts et propositions de son IA sur le téléphone, en lecture seule.
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-75-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**Préliminaire : non testée sur un vrai téléphone.** Les règles et le client de l'API sont couverts par des tests unitaires exécutés sur la JVM dans la CI et l'APK de la version est compilé par GitHub Actions, mais l'application n'a jamais été affichée sur un téléphone ni n'a jamais parlé à un vrai moniteur. Les notifications push sont désactivées par défaut et aucun service push n'est connecté.
+**Préliminaire : non testée sur un vrai téléphone.** Le client est vérifié contre des moniteurs de démonstration (données inventées) dans GitHub Actions et les écrans sont photographiés dans un émulateur, mais l’application n’a pas été vue sur un téléphone et n’a pas parlé à un moniteur en usage quotidien. Elle n’envoie aucune notification push : le moniteur n’a pas encore de service push.
 
 ---
 
-> **État de la sûreté et de la sécurité :** cette application lit un moniteur et peut approuver ou rejeter des propositions d'action qui peuvent relancer des workflows ou commenter sur GitHub. Une approbation est liée au contenu exact affiché, une autre personne doit approuver (le moniteur l'impose) et un lien n'approuve jamais rien de lui-même. Ce n'est pas un système de sécurité (safety) pour une machine.
+> **État de la sûreté et de la sécurité :** cette application lit un moniteur ; hormis la connexion et la déconnexion elle ne change rien, et les propositions ne sont approuvées ou refusées que sur l’ordinateur du moniteur. Ce n’est pas un système de sûreté d’une machine.
 
 ## 📋 En un coup d'œil
 
 | | |
 |---|---|
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Maturité | Échafaudage |
-| Tests | 80 |
+| Tests | 75 |
 | Pile technique | Kotlin, Jetpack Compose (Android 8.0+) |
 | Sur du matériel réel | Non testée sur un vrai téléphone (préliminaire) |
 
@@ -46,17 +46,17 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Contrôles du dépôt | 🟡 | Le contrôle du dépôt, celui des images, les contrôles légers de l'application (huit langues, ressources, secrets) et leurs tests s'exécutent dans la CI. |
-| Règles et client de l'API | 🟠 | 69 tests unitaires JVM sont écrits (approbation, liens, filtre push, réglages, le client face à un réseau simulé) ; la CI les exécute avec Gradle et vérifie combien ont tourné. |
-| Écrans et Keystore | 🔴 | Écrits et compilés en CI, mais jamais affichés sur un écran et jamais exécutés sur un téléphone. |
-| Notifications push | 🟠 | Uniquement critiques et désactivées par défaut ; la partie Firebase est une implémentation nulle tant qu'aucun projet Google n'existe. |
-| Routes du moniteur | 🟠 | Les routes de lecture suivent le contrat de l'API v1 du moniteur ; les routes de propositions et d'appareils appelées par l'application ne sont pas encore dans le moniteur. |
+| Règles et client du moniteur | 🟡 | 64 tests unitaires JVM sont écrits, dont le client contre des réponses enregistrées d’un moniteur de démonstration ; la CI les exécute avec Gradle, vérifie leur nombre et lance le client contre des moniteurs de démonstration en marche. |
+| Écrans et Keystore | 🟠 | Photographiés dans un émulateur contre un moniteur de démonstration ; jamais exécutés sur un téléphone. |
+| Notifications push | 🔴 | Le moniteur n’a pas de service push : l’application ne propose ni interrupteur ni demande d’autorisation. |
+| Routes du moniteur | 🟡 | Vérifiées contre le moniteur de démonstration du commit fixé dans `.github/workflows/ci.yml` ; pas contre un moniteur en usage quotidien. |
 
 ## 🎯 Présentation
 
-* **Le moniteur dans la poche :** le résumé, les alertes, les dépôts et les propositions d'un GitHub Actions Monitor, lus avec un jeton bearer via son API v1.
-* **Décisions à quatre yeux :** approuvez ou rejetez une proposition après avoir vu son contenu exact ; l'approbation est liée à l'empreinte de ce contenu et le moniteur la refuse si la même personne a créé la proposition.
-* **Silencieuse par défaut :** les notifications push sont désactivées, uniquement critiques, une fois par alerte, avec un titre court et rien d'autre.
-* **Rien de secret dans le dépôt :** le jeton est chiffré avec une clé du Keystore Android ; il n'y a ici ni fichier Firebase, ni clé, ni keystore.
+* **Le moniteur dans la poche :** le résumé, les alertes, les dépôts et les propositions d’un GitHub Actions Monitor en mode réseau.
+* **Il s’identifie comme le moniteur le demande :** le jeton d’accès du mode réseau et, si le moniteur a des utilisateurs, la session d’une personne.
+* **Lecture seule :** les propositions montrent la commande exacte et son hash ; l’approbation se fait sur l’ordinateur du moniteur.
+* **Rien de secret dans le dépôt :** les jetons sont scellés avec une clé du Keystore Android ; il n’y a ici aucun fichier Firebase, clé ni keystore.
 
 ## 🧩 Rôle dans EH3D
 
@@ -72,30 +72,35 @@ Comment les parties de ce dépôt s'articulent : qui l'utilise, ce qu'il contien
 
 ## ✨ Fonctionnalités
 
-* Cinq écrans : résumé, alertes (filtre par niveau, pagination par curseurs), dépôts (ceux qui ont des alertes et une recherche de n'importe quel dépôt), propositions (en attente ou toutes, avec le détail) et réglages.
-* Approuver ou rejeter une proposition après une confirmation qui nomme l'empreinte du contenu ; si vous indiquez votre nom dans les réglages, une proposition que vous avez créée ne vous est pas proposée à l'approbation.
-* Les liens `ghamon://proposal/<id>?hash=<hex>` ouvrent une proposition ; si son contenu a changé depuis la création du lien, l'approbation n'est pas proposée.
-* Enregistrement de l'appareil pour des notifications push uniquement critiques, désactivées par défaut.
+* Cinq écrans : résumé, alertes (filtre par niveau), dépôts (classés par risque, recherche par nom), propositions (en attente ou toutes, avec détail) et réglages.
+* Connexion et déconnexion quand le moniteur fonctionne en mode équipe ; chaque refus du moniteur a son propre message.
+* Les liens `ghamon://proposal/<id>?hash=<hex>` ouvrent une proposition et préviennent si son contenu a changé depuis la création du lien.
 * Huit langues qui suivent la langue du téléphone : anglais, espagnol, allemand, français, italien, japonais, chinois et portugais du Portugal.
+
+Les captures montrent l’application dans un émulateur, face à un moniteur de démonstration aux données inventées :
+
+<table><tr><td align="center"><img src="images/screenshots/sign-in.png" alt="Connexion" width="180"><br>Connexion</td><td align="center"><img src="images/screenshots/summary.png" alt="Résumé" width="180"><br>Résumé</td><td align="center"><img src="images/screenshots/alerts.png" alt="Alertes" width="180"><br>Alertes</td><td align="center"><img src="images/screenshots/repos.png" alt="Dépôts" width="180"><br>Dépôts</td><td align="center"><img src="images/screenshots/proposals.png" alt="Propositions" width="180"><br>Propositions</td></tr></table>
 
 ## 🔒 Sécurité et protection
 
-* Le jeton est chiffré en AES-GCM sous une clé qui vit dans le Keystore Android, n'est jamais écrit dans un journal ni dans un texte d'erreur et n'est envoyé qu'à l'adresse saisie ; les redirections ne sont jamais suivies.
-* `http://` en clair n'est accepté que pour localhost, les noms `.local` et les adresses IPv4 privées ; tout autre hôte exige `https://`, vérifié uniquement auprès des autorités du système.
-* Une approbation porte l'empreinte du contenu qui était à l'écran ; un lien ouvre seulement une proposition et n'approuve ni n'exécute jamais rien.
-* Les notifications push sont désactivées par défaut, uniquement critiques, avec un titre court et nettoyé : pas de journaux, pas de secrets de dépôt.
-* Les données de l'application sont exclues des sauvegardes, et `python -I tools/check_app.py` échoue si un fichier Firebase, un keystore ou une clé se trouve dans l'arbre.
+* Le jeton d’accès et la session sont scellés en AES-GCM avec une clé du Keystore Android, ne sont jamais écrits dans un journal ni un message d’erreur et ne sont envoyés qu’à l’adresse saisie ; changer d’adresse les efface, et aucune redirection n’est suivie.
+* Le mot de passe est envoyé une fois pour se connecter et n’est pas conservé.
+* `http://` en clair n’est accepté que pour localhost, les noms `.local` et les adresses IPv4 privées ; tout autre hôte exige `https://`, vérifié uniquement avec les autorités du système.
+* Un lien ouvre seulement une proposition ; rien n’est approuvé ni exécuté depuis le téléphone.
+* Les données de l’application sont exclues des sauvegardes, et `python -I tools/check_app.py` échoue si un fichier Firebase, un keystore ou une clé se trouve dans l’arborescence.
 
 ## 🔌 Interfaces
 
-* Lectures du moniteur : `GET /api/v1/health`, `/status`, `/accounts`, `/accounts/{id}/status`, `/alerts` (pagination par curseur, filtres) et `/repos/{owner}/{repo}/health`, avec `Authorization: Bearer` et `X-API-Version: 1`.
-* Propositions (routes supposées par l'application, toutes dans le fichier de configuration) : `GET /api/v1/actions/proposals`, `GET .../{id}`, `POST .../{id}/approve` avec `expected_hash` et `POST .../{id}/reject`.
-* Appareils : `POST /api/v1/devices` et `DELETE /api/v1/devices/{id}`.
+* Lectures : `GET /api/auth/me`, `/api/health`, `/api/alerts`, `/api/team/health`, `/api/ai/actions` et `/api/accounts` (plusieurs comptes seulement).
+* Connexion et déconnexion : `POST /api/auth/login` (`client: "api"`) et `POST /api/auth/logout`.
+* En-têtes : `X-Monitor-Access` avec le jeton d’accès et, en mode équipe, `Authorization: Bearer` avec la session.
 * Lien : `ghamon://proposal/<id>?hash=<64 caractères hexadécimaux>`.
 
 ## ⚙️ Configuration
 
-Toute valeur réglable se trouve dans `app/src/main/assets/app_config.json` : les chemins, les délais, la taille de page, les valeurs push et le schéma du lien. L'adresse du moniteur, son jeton et votre nom se saisissent dans les réglages de l'application et restent sur le téléphone. Rien de réglable n'est dans le code.
+Toutes les valeurs réglables sont dans `app/src/main/assets/app_config.json` : les chemins, les délais, la limite de taille, la règle push et le schéma du lien. L’adresse du moniteur, son jeton d’accès et votre utilisateur sont saisis dans les réglages et conservés sur le téléphone.
+
+Le moniteur doit avoir `listen.network` activé ; un nom (et non une adresse) utilisé pour le joindre va dans `listen.allowed_hosts` ; placez le jeton d’accès dans `MONITOR_ACCESS_TOKEN` pour qu’il ne change pas à chaque démarrage ; avec des utilisateurs (mode équipe), activez aussi `auth.allow_bearer`.
 
 ## 🚀 Démarrage rapide
 
@@ -112,7 +117,7 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 Tests
 
-69 tests unitaires s'exécutent sur la JVM (`./gradlew testDebugUnitTest`) sans téléphone : le client de l'API face à un réseau simulé, les règles, les liens, le filtre push et les réglages. 11 tests Python couvrent le dépôt et les contrôles légers de l'application. La CI les exécute tous ; rien ici n'a été exécuté sur un téléphone.
+64 tests unitaires s’exécutent sur la JVM (`./gradlew testDebugUnitTest`) sans téléphone : le client contre des réponses enregistrées d’un moniteur de démonstration, ses refus, les liens, les réglages et la règle push. Cinq d’entre eux parlent à des moniteurs de démonstration en marche et sont ignorés sauf si la tâche CI "contract" les démarre. 11 tests Python couvrent le dépôt et les contrôles légers de l’application. Rien n’a été exécuté sur un téléphone.
 
 ## 🏗️ Compilation et publication
 
@@ -132,15 +137,18 @@ MONITOR-ANDROID/
 ├── app/
 │   ├── build.gradle.kts proguard-rules.pro                la compilation et les règles de réduction
 │   ├── src/main/AndroidManifest.xml                       permissions, activité, lien ghamon://
-│   ├── src/main/assets/app_config.json                    chemins, délais, page, valeurs push
+│   ├── src/main/assets/app_config.json                    chemins, délais, taille maximale, règle push
 │   ├── src/main/res/                                      les textes en huit langues, icônes et thèmes
 │   ├── src/main/java/es/electrohobby3d/ghamonitor/core/   règles testées sur la JVM
-│   ├── src/main/java/es/electrohobby3d/ghamonitor/        écrans, view model, Keystore, push
-│   └── src/test/java/es/electrohobby3d/ghamonitor/core/   les tests unitaires sur la JVM
+│   ├── src/main/java/es/electrohobby3d/ghamonitor/        écrans, view model, thème, Keystore
+│   ├── src/test/java/es/electrohobby3d/ghamonitor/core/   les tests unitaires sur la JVM
+│   ├── src/test/resources/contract/                       réponses enregistrées d'un moniteur de démo
+│   └── src/androidTest/                                   les captures dans un émulateur
 ├── tools/
 │   ├── ci_validate.py                                     manifeste, versions, parité des README
 │   ├── check_app.py                                       langues, ressources, configuration et secrets de l'application
-│   └── make_architecture.py make_structure.py             dessinent les deux images du README
+│   ├── make_architecture.py make_structure.py             dessinent les deux images du README
+│   └── contract/                                          moniteurs de démo et enregistrement
 ├── docs/                                                  les sources des deux images
 ├── gradle/                                                les fichiers du wrapper Gradle
 ├── gradlew                                                le wrapper Gradle
@@ -161,16 +169,16 @@ MONITOR-ANDROID/
 
 ## 🗺️ Feuille de route et limites connues
 
-**Limites connues aujourd'hui**
+**Limites connues aujourd’hui**
 
-* Version préliminaire : l'application n'a pas été exécutée sur un téléphone ni essayée avec un vrai moniteur.
-* Les routes de propositions et d'appareils qu'elle appelle ne sont pas encore dans le moniteur.
-* Il n'y a pas de service push : il faut un projet Google et une clé que seul le mainteneur peut créer.
-* Pas encore de confirmation biométrique avant une approbation.
+* Version préliminaire : l’application n’a pas été exécutée sur un téléphone.
+* L’édition Lite du moniteur n’a ni alertes, ni dépôts, ni propositions ; l’application ne peut que le dire.
+* Aucun service push : le moniteur n’envoie pas encore de messages push.
+* L’appairage par le code QR du moniteur n’est pas pris en charge ; le jeton d’accès se saisit.
 
 **Ensuite**
 
-* Exécuter la première CI et corriger ce qu'elle trouve, brancher les routes du moniteur, puis ajouter le service push Firebase quand le projet Google existera.
+* L’essayer sur un téléphone face à un vrai moniteur, puis l’appairage par code QR, et le push quand le moniteur le proposera.
 
 ## 🌍 Langues
 

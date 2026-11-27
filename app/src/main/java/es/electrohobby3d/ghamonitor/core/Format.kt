@@ -38,21 +38,4 @@ object Format {
             else -> "${minutes}m"
         }
     }
-
-    /** The repositories of a list of alerts with the most serious level each one has, worst first and then by name. */
-    fun reposByWorst(alerts: List<Alert>): List<Pair<String, String>> {
-        val worst = LinkedHashMap<String, Alert>()
-        for (a in alerts) {
-            if (a.repo.isEmpty()) continue
-            val old = worst[a.repo]
-            if (old == null || severityOf(a.level) > severityOf(old.level)) worst[a.repo] = a
-        }
-        return worst.values.sortedWith(compareByDescending<Alert> { severityOf(it.level) }.thenBy { it.repo }).map { it.repo to it.level }
-    }
-
-    /** "owner/name" split into its two parts, or null when it is not that form. */
-    fun splitRepo(full: String): Pair<String, String>? {
-        val match = Regex("^([A-Za-z0-9_.-]{1,39})/([A-Za-z0-9_.-]{1,100})\$").matchEntire(full.trim()) ?: return null
-        return match.groupValues[1] to match.groupValues[2]
-    }
 }

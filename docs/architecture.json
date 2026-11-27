@@ -1,8 +1,8 @@
 {
   "repo": "TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID",
   "ecosystem": "eh3d",
-  "tagline": "The monitor in your pocket: read, review, decide.",
-  "description": "The Android app reads the read API v1 of GitHub Actions Monitor with a bearer token kept in the Android Keystore, shows the summary, alerts, repositories and action proposals, lets a person approve or reject a proposal, opens ghamon links, and has critical-only push notifications that are off by default behind a null push service.",
+  "tagline": "The monitor in your pocket: read it from anywhere you let it.",
+  "description": "The Android app reads a GitHub Actions Monitor in network mode with its access token and, in team mode, the session of a person, both sealed by the Android Keystore; it shows the summary, alerts, repositories and the proposals of its AI read only, and opens ghamon links. It sends no push notifications.",
   "columns": [
     "WHO USES IT",
     "THIS APP",
@@ -15,8 +15,8 @@
       "level": "external",
       "title": "A person on call",
       "lines": [
-        "watches alerts and",
-        "approves or rejects proposals"
+        "watches the state of",
+        "the repositories"
       ]
     },
     {
@@ -38,7 +38,7 @@
         "summary, alerts, repos,",
         "proposals, settings",
         [
-          "not run on a phone",
+          "emulator only, no phone",
           "warn"
         ]
       ],
@@ -54,23 +54,23 @@
       "level": "tested",
       "title": "Rules",
       "lines": [
-        "hash-bound approval, links,",
-        "critical-only push gate"
+        "summary by parts, links,",
+        "which words are serious"
       ],
       "code": [
-        "app/src/main/java/es/electrohobby3d/ghamonitor/core/ProposalRules.kt",
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Summary.kt",
         "app/src/main/java/es/electrohobby3d/ghamonitor/core/DeepLink.kt",
-        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Push.kt"
+        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Models.kt"
       ]
     },
     {
       "id": "api",
       "column": 1,
       "level": "tested",
-      "title": "API v1 client",
+      "title": "Monitor client",
       "lines": [
-        "bearer token, cursors, error",
-        "envelope, paths from config"
+        "access token, sign in,",
+        "the real routes"
       ],
       "code": [
         "app/src/main/java/es/electrohobby3d/ghamonitor/core/MonitorApi.kt",
@@ -83,7 +83,7 @@
       "level": "tested",
       "title": "Settings",
       "lines": [
-        "address checked, token",
+        "address checked, tokens",
         "sealed by a Keystore key"
       ],
       "code": [
@@ -92,26 +92,13 @@
       ]
     },
     {
-      "id": "push",
-      "column": 2,
-      "level": "config",
-      "title": "Push service",
-      "lines": [
-        "null until a Google",
-        "project exists"
-      ],
-      "code": [
-        "app/src/main/java/es/electrohobby3d/ghamonitor/core/Push.kt::object NullPushRegistrar"
-      ]
-    },
-    {
       "id": "monitor",
       "column": 2,
       "level": "external",
       "title": "GitHub Actions Monitor",
       "lines": [
-        "read API v1, proposals",
-        "and device registration"
+        "network mode, read",
+        "routes and sign in"
       ]
     },
     {
@@ -120,8 +107,8 @@
       "level": "external",
       "title": "Android",
       "lines": [
-        "Keystore, notifications",
-        "and the link filter"
+        "Keystore and",
+        "the link filter"
       ]
     }
   ],
@@ -156,7 +143,7 @@
     {
       "from": "api",
       "to": "monitor",
-      "label": "HTTPS + bearer",
+      "label": "HTTP(S) + token",
       "level": "tested"
     },
     {
@@ -164,19 +151,13 @@
       "to": "android",
       "label": "seals",
       "level": "config"
-    },
-    {
-      "from": "rules",
-      "to": "push",
-      "label": "gate",
-      "level": "config"
     }
   ],
   "legend": {
-    "tested": "tested on the JVM in CI",
-    "untested": "built from the code, not run on a phone",
-    "config": "needs a phone or a Google project",
+    "tested": "tested on the JVM and against demo monitors in CI",
+    "untested": "pictured in an emulator, not run on a phone",
+    "config": "needs a phone",
     "external": "outside this repository"
   },
-  "footer": "Nothing here has been run on a phone or against a real monitor yet."
+  "footer": "Nothing here has been run on a phone or against a monitor in daily use."
 }

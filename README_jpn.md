@@ -6,32 +6,32 @@
 
 <p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 中文</a> | 🇯🇵 <b>日本語</b> | <a href="README_por.md">🇵🇹 Português</a></p>
 
-### GitHub Actions Monitor のネイティブ Android クライアント：概要、アラート、リポジトリ、提案をスマートフォンで確認できます。プッシュ通知は重大なものだけで、初期設定ではオフです。
+### GitHub Actions Monitor のネイティブ Android クライアント: 概要、アラート、リポジトリ、AI の提案をスマートフォンで閲覧 (読み取り専用)。
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Stack-Kotlin%20%2B%20Jetpack%20Compose-blue.svg" alt="Kotlin and Jetpack Compose">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-80-2EA043.svg" alt="Tests">
-  <img src="https://img.shields.io/badge/Version-0.1.0-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-75-2EA043.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Version-0.1.1-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
 ---
 
-**暫定版：実際のスマートフォンではテストしていません。** ルールと API クライアントは CI の JVM 上で動くユニットテストでカバーされ、リリースの APK は GitHub Actions がビルドしますが、アプリはスマートフォンで表示されたことがなく、実際のモニターと通信したこともありません。プッシュ通知は初期設定でオフで、プッシュサービスは接続されていません。
+**プレビュー版: 実機では未テストです。** クライアントは GitHub Actions 上のデモモニター (架空のデータ) で確認し、画面はエミュレーターで撮影していますが、実機で表示したことも、日常運用中のモニターと通信したこともありません。プッシュ通知は送りません。モニターにはまだプッシュサービスがありません。
 
 ---
 
-> **安全性とセキュリティの現状：** このアプリはモニターを読み取り、ワークフローの再実行や GitHub へのコメントを行うアクション提案を承認または却下できます。承認は表示された内容そのものに結び付き、別の人が承認する必要があり（モニターが強制します）、リンクが単独で何かを承認することはありません。機械の安全（セーフティ）システムではありません。
+> **安全性とセキュリティの現状：** このアプリはモニターを読み取ります。サインインとサインアウト以外は何も変更せず、提案の承認と却下はモニターを動かすコンピューターでのみ行います。いかなる機械の安全装置でもありません。
 
 ## 📋 ひと目で
 
 | | |
 |---|---|
-| バージョン | `0.1.0` |
+| バージョン | `0.1.1` |
 | 成熟度 | 足場 |
-| テスト | 80 |
+| テスト | 75 |
 | 技術スタック | Kotlin、Jetpack Compose（Android 8.0 以上） |
 | 実機での動作 | 実際のスマートフォンでは未テスト（暫定版） |
 
@@ -46,17 +46,17 @@
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | リポジトリ チェック | 🟡 | リポジトリのチェック、画像のチェック、アプリの軽量チェック（8 言語、リソース、機密）とそのテストが CI で実行されます。 |
-| ルールと API クライアント | 🟠 | JVM ユニットテストが 69 件書かれています（承認、リンク、プッシュのゲート、設定、模擬ネットワークに対するクライアント）。CI が Gradle でそれらを実行し、実行された件数を確認します。 |
-| 画面と Keystore | 🔴 | 書かれて CI でコンパイルされていますが、画面に表示されず、スマートフォンで実行されたこともありません。 |
-| プッシュ通知 | 🟠 | 重大なものだけで、初期設定ではオフです。Firebase 側は Google プロジェクトができるまで何もしない実装です。 |
-| モニターのルート | 🟠 | 読み取りルートはモニターの API v1 の契約に従います。アプリが呼び出す提案とデバイスのルートは、まだモニターにありません。 |
+| ルールとモニタークライアント | 🟡 | デモモニターから記録した応答に対するクライアントを含む 64 件の JVM 単体テストがあり、CI が Gradle で実行して件数を確認し、稼働中のデモモニターに対してもクライアントを実行します。 |
+| 画面と Keystore | 🟠 | エミュレーターでデモモニターに対して撮影しました。実機では未実行です。 |
+| プッシュ通知 | 🔴 | モニターにプッシュサービスがないため、アプリはスイッチを表示せず権限も要求しません。 |
+| モニターのルート | 🟡 | `.github/workflows/ci.yml` で固定したコミットのデモモニターで確認しました。日常運用中のモニターでは未確認です。 |
 
 ## 🎯 概要
 
-* **ポケットの中のモニター：** GitHub Actions Monitor の概要、アラート、リポジトリ、提案を、API v1 とベアラートークンで読み取ります。
-* **二人承認の判断：** 提案の内容そのものを確認してから承認または却下します。承認はその内容のハッシュに結び付き、同じ人が作成した提案はモニターが拒否します。
-* **初期設定では静か：** プッシュ通知はオフで、重大なものだけ、アラートごとに 1 回、短いタイトルのみです。
-* **リポジトリに秘密はありません：** トークンは Android Keystore の鍵で保護されます。Firebase のファイル、鍵、キーストアはここにありません。
+* **ポケットの中のモニター:** ネットワークモードの GitHub Actions Monitor の概要、アラート、リポジトリ、提案。
+* **モニターが求める方法で認証:** ネットワークモードのアクセストークンと、ユーザーを使う場合は個人のセッション。
+* **読み取り専用:** 提案は正確なコマンドとハッシュを表示します。承認はモニターのコンピューターで行います。
+* **リポジトリに秘密はありません:** トークンは Android Keystore の鍵で封印されます。Firebase ファイル、鍵、キーストアはありません。
 
 ## 🧩 EH3D での役割
 
@@ -72,30 +72,35 @@ TOOLS-GITHUB-ACTIONS-MONITOR-ANDROID は GitHub Actions Monitor（TOOLS-GITHUB-A
 
 ## ✨ 機能
 
-* 5 つの画面：概要、アラート（レベルで絞り込み、カーソルによるページ送り）、リポジトリ（アラートのあるものと任意のリポジトリの検索）、提案（保留中またはすべて、詳細付き）、設定。
-* 内容のハッシュを示す確認のあとで提案を承認または却下します。設定に名前を入力すると、自分が作成した提案は承認の対象として表示されません。
-* リンク `ghamon://proposal/<id>?hash=<hex>` で提案を開きます。リンク作成後に内容が変わっていた場合、承認はできません。
-* 重大なものだけのプッシュ通知のためのデバイス登録（初期設定ではオフ）。
-* スマートフォンの言語に従う 8 言語：英語、スペイン語、ドイツ語、フランス語、イタリア語、日本語、中国語、ポルトガル（ポルトガル）語。
+* 5 つの画面: 概要、アラート (レベルで絞り込み)、リポジトリ (リスク順、名前で検索)、提案 (保留中またはすべて、詳細付き)、設定。
+* モニターがチームモードの場合はサインインとサインアウト。モニターの拒否理由ごとに専用のメッセージを表示します。
+* リンク `ghamon://proposal/<id>?hash=<hex>` は提案を 1 件開き、作成後に内容が変わっていれば警告します。
+* 端末の言語に合わせる 8 言語: 英語、スペイン語、ドイツ語、フランス語、イタリア語、日本語、中国語、ヨーロッパポルトガル語。
+
+画像は、架空データのデモモニターに接続したエミュレーター上のアプリです。
+
+<table><tr><td align="center"><img src="images/screenshots/sign-in.png" alt="サインイン" width="180"><br>サインイン</td><td align="center"><img src="images/screenshots/summary.png" alt="概要" width="180"><br>概要</td><td align="center"><img src="images/screenshots/alerts.png" alt="アラート" width="180"><br>アラート</td><td align="center"><img src="images/screenshots/repos.png" alt="リポジトリ" width="180"><br>リポジトリ</td><td align="center"><img src="images/screenshots/proposals.png" alt="提案" width="180"><br>提案</td></tr></table>
 
 ## 🔒 セキュリティと安全
 
-* トークンは Android Keystore にある鍵で AES-GCM により保護され、ログやエラーメッセージには決して書かれず、入力したアドレスにのみ送られます。リダイレクトには従いません。
-* 暗号化されない `http://` は localhost、`.local` の名前、プライベート IPv4 アドレスにのみ許可されます。それ以外のホストには `https://` が必要で、システムの認証局に対してのみ検証されます。
-* 承認は、画面に表示されていた内容のハッシュを伴います。リンクは提案を開くだけで、承認や実行は決して行いません。
-* プッシュ通知は初期設定でオフ、重大なものだけで、短く整えたタイトルのみです。ログやリポジトリの機密は含みません。
-* アプリのデータはバックアップから除外されます。Firebase のファイル、キーストア、鍵がツリーにあると `python -I tools/check_app.py` が失敗します。
+* アクセストークンとセッションは Android Keystore の鍵を使い AES-GCM で封印し、ログやエラー文には書かず、入力したアドレスにのみ送ります。アドレスを変えると破棄し、リダイレクトは追いません。
+* パスワードはサインインのために一度だけ送り、保存しません。
+* 平文の `http://` は localhost、`.local` 名、プライベート IPv4 アドレスのみ受け付けます。その他のホストには `https://` が必要で、システムの認証局のみで検証します。
+* リンクは提案を開くだけです。端末から承認や実行は行いません。
+* アプリのデータはバックアップから除外され、Firebase ファイル、キーストア、鍵がツリーにあると `python -I tools/check_app.py` は失敗します。
 
 ## 🔌 インターフェース
 
-* モニターの読み取り：`GET /api/v1/health`、`/status`、`/accounts`、`/accounts/{id}/status`、`/alerts`（カーソルによるページ送り、フィルター）、`/repos/{owner}/{repo}/health`。`Authorization: Bearer` と `X-API-Version: 1` を使います。
-* 提案（アプリが前提とするルートで、すべて設定ファイルにあります）：`GET /api/v1/actions/proposals`、`GET .../{id}`、`expected_hash` 付きの `POST .../{id}/approve`、`POST .../{id}/reject`。
-* デバイス：`POST /api/v1/devices` と `DELETE /api/v1/devices/{id}`。
-* リンク：`ghamon://proposal/<id>?hash=<16 進数 64 文字>`。
+* 読み取り: `GET /api/auth/me`、`/api/health`、`/api/alerts`、`/api/team/health`、`/api/ai/actions`、`/api/accounts` (複数アカウントのみ)。
+* サインインとサインアウト: `POST /api/auth/login` (`client: "api"`) と `POST /api/auth/logout`。
+* ヘッダー: アクセストークンは `X-Monitor-Access`、チームモードではセッションを `Authorization: Bearer` で送ります。
+* リンク: `ghamon://proposal/<id>?hash=<16 進数 64 文字>`。
 
 ## ⚙️ 設定
 
-調整できる値はすべて `app/src/main/assets/app_config.json` にあります：パス、タイムアウト、ページサイズ、プッシュの初期値、リンクのスキーム。モニターのアドレス、トークン、あなたの名前はアプリの設定で入力し、スマートフォンに保存されます。調整できる値はコードにありません。
+調整できる値はすべて `app/src/main/assets/app_config.json` にあります: パス、タイムアウト、サイズ上限、プッシュのルール、リンクのスキーム。モニターのアドレス、アクセストークン、ユーザーはアプリの設定で入力し、端末に保存します。
+
+モニター側では `listen.network` を有効にします。接続に使う名前 (アドレスではない) は `listen.allowed_hosts` に追加します。起動のたびに変わらないようにアクセストークンを `MONITOR_ACCESS_TOKEN` に設定します。ユーザーを使う場合 (チームモード) は `auth.allow_bearer` も有効にします。
 
 ## 🚀 クイックスタート
 
@@ -112,7 +117,7 @@ python -I -m unittest discover -s tools -p "test_*.py"
 
 ## 🧪 テスト
 
-69 件のユニットテストが、スマートフォンなしで JVM 上で実行されます（`./gradlew testDebugUnitTest`）：模擬ネットワークに対する API クライアント、ルール、リンク、プッシュのゲート、設定。11 件の Python テストがリポジトリとアプリの軽量チェックをカバーします。CI がすべてを実行します。スマートフォンでの実行はまだありません。
+64 件の単体テストが JVM 上で端末なしに実行されます (`./gradlew testDebugUnitTest`): デモモニターから記録した応答に対するクライアント、拒否、リンク、設定、プッシュのルール。うち 5 件は稼働中のデモモニターと通信し、CI ジョブ "contract" が起動しない限りスキップされます。11 件の Python テストがリポジトリとアプリの軽量チェックを扱います。実機では何も実行していません。
 
 ## 🏗️ ビルドとリリース
 
@@ -132,15 +137,18 @@ MONITOR-ANDROID/
 ├── app/
 │   ├── build.gradle.kts proguard-rules.pro                ビルドと縮小ルール
 │   ├── src/main/AndroidManifest.xml                       権限、アクティビティ、ghamon:// リンク
-│   ├── src/main/assets/app_config.json                    パス、タイムアウト、ページサイズ、プッシュ初期値
+│   ├── src/main/assets/app_config.json                    パス、タイムアウト、サイズ上限、プッシュ規則
 │   ├── src/main/res/                                      8 言語のテキスト、アイコン、テーマ
 │   ├── src/main/java/es/electrohobby3d/ghamonitor/core/   JVM でテスト済みのルール
-│   ├── src/main/java/es/electrohobby3d/ghamonitor/        画面、ViewModel、Keystore、プッシュ
-│   └── src/test/java/es/electrohobby3d/ghamonitor/core/   JVM 上のユニットテスト
+│   ├── src/main/java/es/electrohobby3d/ghamonitor/        画面、ViewModel、テーマ、Keystore
+│   ├── src/test/java/es/electrohobby3d/ghamonitor/core/   JVM 上のユニットテスト
+│   ├── src/test/resources/contract/                       デモモニターから記録した応答
+│   └── src/androidTest/                                   エミュレーターでのスクリーンショット
 ├── tools/
 │   ├── ci_validate.py                                     マニフェスト、バージョン、README の整合
 │   ├── check_app.py                                       アプリの言語、リソース、設定、機密
-│   └── make_architecture.py make_structure.py             README の 2 つの図を描く
+│   ├── make_architecture.py make_structure.py             README の 2 つの図を描く
+│   └── contract/                                          デモモニターと応答の記録
 ├── docs/                                                  2 つの図の元データ
 ├── gradle/                                                Gradle ラッパーのファイル
 ├── gradlew                                                Gradle ラッパー
@@ -161,16 +169,16 @@ MONITOR-ANDROID/
 
 ## 🗺️ ロードマップと既知の制限
 
-**現時点で分かっている制限**
+**現在の既知の制限**
 
-* 暫定版：アプリはスマートフォンで実行されたことも、実際のモニターで試されたこともありません。
-* アプリが呼び出す提案とデバイスのルートは、まだモニターにありません。
-* プッシュサービスがありません。Google プロジェクトと、メンテナーだけが作れる鍵が必要です。
-* 承認の前の生体認証による確認はまだありません。
+* プレビュー版: 実機では実行していません。
+* モニターの Lite 版にはアラート、リポジトリ、提案がなく、アプリはそのことを表示するだけです。
+* プッシュサービスはありません。モニターはまだプッシュを送りません。
+* モニターの QR コードによるペアリングには未対応で、アクセストークンは手入力です。
 
-**次のステップ**
+**今後**
 
-* 最初の CI を実行して見つかった問題を直し、モニターのルートをつなぎ、Google プロジェクトができたら Firebase のプッシュサービスを追加します。
+* 実機と実際のモニターで試し、次に QR ペアリング、モニターが対応したらプッシュ。
 
 ## 🌍 言語
 
