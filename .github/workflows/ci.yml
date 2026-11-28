@@ -92,7 +92,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: JuanenRac/TOOLS-GITHUB-ACTIONS-MONITOR
-          ref: 3d47eabe43bd51592ea84bcfcc0b47b376e499b3 # the monitor the app is checked against (2.2.0)
+          ref: 158abc2613c1a09a60db22b47b7cd7398a73d4be # the monitor the app is checked against (the published 2.2.0)
           path: monitor-checkout
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
